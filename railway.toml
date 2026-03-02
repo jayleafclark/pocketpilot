@@ -1,5 +1,2 @@
-[build]
-rootDir = "web"
-
 [deploy]
-startCommand = "npm start"
+startCommand = "node server.js"
