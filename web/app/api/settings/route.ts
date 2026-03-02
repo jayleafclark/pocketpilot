@@ -14,9 +14,9 @@ export async function GET() {
 
     return NextResponse.json({
       incomeConfig: incomeConfig || {
-        karaniDailyAvg: 400,
-        ilaiBiweekly: 3000,
-        savingsGoal: 800,
+        karaniDailyAvg: 0,
+        ilaiBiweekly: 0,
+        savingsGoal: 0,
       },
       settings: settings || {
         taxYear: 2026,
@@ -26,6 +26,7 @@ export async function GET() {
         currentStreak: 0,
         bestStreak: 0,
         biometricEnabled: false,
+        onboardingComplete: false,
       },
       entities,
       user: {

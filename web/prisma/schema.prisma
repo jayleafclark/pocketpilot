@@ -112,9 +112,9 @@ model IncomeConfig {
   id                String    @id @default(cuid())
   userId            String    @unique
   user              User      @relation(fields: [userId], references: [id])
-  karaniDailyAvg    Float     @default(400)
-  ilaiBiweekly      Float     @default(3000)
-  savingsGoal       Float     @default(800)
+  karaniDailyAvg    Float     @default(0)
+  ilaiBiweekly      Float     @default(0)
+  savingsGoal       Float     @default(0)
   updatedAt         DateTime  @updatedAt
 }
 
@@ -131,5 +131,6 @@ model Settings {
   bestStreak          Int       @default(0)
   lastUnderBudgetDate DateTime?
   biometricEnabled    Boolean   @default(false)
+  onboardingComplete  Boolean   @default(false)
   updatedAt           DateTime  @updatedAt
 }

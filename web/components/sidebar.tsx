@@ -46,24 +46,24 @@ export default function Sidebar() {
   return (
     <div
       className="flex-shrink-0 bg-card border-r border-border flex flex-col"
-      style={{ width: 260, padding: "20px 0" }}
+      style={{ width: 200, padding: "20px 0", position: "relative" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3" style={{ padding: "0 20px 20px" }}>
+      <div className="flex items-center gap-2.5" style={{ padding: "0 20px", marginBottom: 24 }}>
         <div
           className="flex items-center justify-center"
           style={{
-            width: 32,
-            height: 32,
+            width: 28,
+            height: 28,
             borderRadius: 8,
             background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))",
           }}
         >
-          <span className="font-extrabold text-[#FFFDF5]" style={{ fontSize: 14, fontFamily: "var(--font-heading)" }}>
+          <span className="font-extrabold text-[#FFFDF5]" style={{ fontSize: 12, fontFamily: "var(--font-heading)" }}>
             P
           </span>
         </div>
-        <span className="font-semibold text-t1" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
+        <span style={{ fontSize: 16, fontFamily: "var(--font-body)", fontWeight: 600, color: "var(--color-t1)" }}>
           PocketPilot
         </span>
       </div>
@@ -72,56 +72,43 @@ export default function Sidebar() {
       <Link href="/" className="block no-underline" style={{ margin: "0 14px 20px" }}>
         <div
           className="bg-bg border border-border cursor-pointer hover:border-[rgba(0,0,0,0.09)] transition-all"
-          style={{ padding: "20px 16px", borderRadius: 16 }}
+          style={{ padding: "16px 12px", borderRadius: 14 }}
         >
-          <div className="flex flex-col items-center gap-2">
-            <div className="relative" style={{ width: 100, height: 100 }}>
+          <div className="flex flex-col items-center">
+            <div className="relative" style={{ width: 100, height: 100, margin: "0 auto" }}>
               <Arc pct={b.pct} size={100} sw={5} />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
-                  className="font-bold"
                   style={{
-                    fontSize: 26,
+                    fontSize: 28,
                     fontFamily: "var(--font-heading)",
+                    fontWeight: 700,
                     color: isOver ? "var(--color-red)" : "var(--color-t1)",
                   }}
                 >
                   {isOver ? `-$${Math.abs(Math.round(b.remaining))}` : `$${Math.round(b.remaining)}`}
                 </span>
-                <span className="text-t3 uppercase" style={{ fontSize: 9, letterSpacing: "0.06em", marginTop: 2 }}>
+                <span style={{ fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 600, textTransform: "uppercase", color: "#9C9A95", letterSpacing: "0.05em", marginTop: 2 }}>
                   {isOver ? "over" : "left"}
                 </span>
               </div>
             </div>
-            <span className="text-t3" style={{ fontSize: 12 }}>
+            <span style={{ fontSize: 13, fontFamily: "var(--font-body)", color: "#9C9A95", textAlign: "center", marginTop: 4 }}>
               of ${Math.round(b.dailyBudget)} daily budget
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="bg-bg3" style={{ height: 4, borderRadius: 2, marginTop: 12 }}>
-            <div
-              className="transition-all duration-600"
-              style={{
-                height: 4,
-                borderRadius: 2,
-                width: `${Math.min(b.pct, 1) * 100}%`,
-                backgroundColor: isOver ? "var(--color-red)" : "var(--color-ch)",
-              }}
-            />
-          </div>
-
-          {/* Spent / Pool */}
-          <div className="flex justify-between" style={{ marginTop: 8 }}>
-            <span className="text-t3" style={{ fontSize: 11 }}>
-              Spent:{" "}
-              <span className="text-t1 font-medium" style={{ fontFamily: "var(--font-mono)" }}>
+          {/* Spent / Pool row */}
+          <div className="flex justify-between" style={{ marginTop: 12, padding: "0 4px", fontSize: 13, fontFamily: "var(--font-body)" }}>
+            <span style={{ color: "#9C9A95" }}>
+              Spent{" "}
+              <span style={{ color: "var(--color-t1)", fontWeight: 500, fontFamily: "var(--font-mono)" }}>
                 ${Math.round(b.spentToday)}
               </span>
             </span>
-            <span className="text-t3" style={{ fontSize: 11 }}>
-              Pool:{" "}
-              <span className="text-ch font-medium" style={{ fontFamily: "var(--font-mono)" }}>
+            <span style={{ color: "#9C9A95" }}>
+              Pool{" "}
+              <span style={{ color: "var(--color-ch)", fontWeight: 500, fontFamily: "var(--font-mono)" }}>
                 ${Math.round(b.monthPool)}
               </span>
             </span>
@@ -130,7 +117,7 @@ export default function Sidebar() {
       </Link>
 
       {/* Navigation */}
-      <div className="flex-1 flex flex-col" style={{ padding: "0 10px", gap: 2 }}>
+      <div className="flex-1 flex flex-col" style={{ padding: "0 10px", marginTop: 32, gap: 2 }}>
         {nav.map((n) => {
           const active = pathname === n.id || (n.id !== "/" && pathname.startsWith(n.id));
           return (
@@ -139,16 +126,17 @@ export default function Sidebar() {
               href={n.id}
               className="flex items-center no-underline transition-all"
               style={{
-                gap: 10,
+                gap: 12,
                 padding: "10px 12px",
                 borderRadius: 8,
                 fontSize: 14,
-                backgroundColor: active ? "rgba(176,144,73,0.07)" : "transparent",
-                color: active ? "var(--color-ch)" : "var(--color-t2)",
+                fontFamily: "var(--font-body)",
+                backgroundColor: active ? "#F5F0E6" : "transparent",
+                color: active ? "var(--color-ch)" : "#6B6963",
                 fontWeight: active ? 600 : 400,
               }}
             >
-              <span className="flex" style={{ opacity: active ? 1 : 0.5 }}>
+              <span className="flex" style={{ width: 20, height: 20, opacity: active ? 1 : 0.5 }}>
                 {n.icon}
               </span>
               {n.label}
@@ -157,18 +145,15 @@ export default function Sidebar() {
         })}
       </div>
 
-      {/* Keyboard hint */}
-      <div className="text-t4" style={{ padding: "0 14px 8px", fontSize: 11 }}>Press 1-6 to navigate</div>
-
       {/* Profile + Logout */}
-      <div className="flex justify-between items-center" style={{ padding: "12px 14px", borderTop: "1px solid var(--color-border)" }}>
+      <div className="flex justify-between items-center" style={{ padding: 20, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
         <div className="flex items-center gap-2.5">
           <div
             className="rounded-full flex items-center justify-center font-semibold"
             style={{
-              width: 30,
-              height: 30,
-              fontSize: 13,
+              width: 28,
+              height: 28,
+              fontSize: 12,
               border: "1.5px solid rgba(176,144,73,0.19)",
               color: "var(--color-ch)",
               fontFamily: "var(--font-heading)",
@@ -176,14 +161,19 @@ export default function Sidebar() {
           >
             {initial}
           </div>
-          <span className="text-t2" style={{ fontSize: 13 }}>{displayName}</span>
+          <span style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>{displayName}</span>
         </div>
         <button
           onClick={() => signOut({ redirectUrl: "/sign-in" })}
           title="Sign out"
-          className="bg-transparent border-none cursor-pointer text-t4 flex p-1 hover:text-t2 transition-colors"
+          className="bg-transparent border-none cursor-pointer flex p-1 transition-colors"
+          style={{ color: "#9C9A95" }}
         >
-          {Icons.logout}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
         </button>
       </div>
     </div>

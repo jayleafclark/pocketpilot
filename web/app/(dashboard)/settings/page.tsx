@@ -233,23 +233,24 @@ export default function SettingsPage() {
         {/* Business Entities */}
         <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Business Entities</h3>
-          <div className="space-y-3">
-            {(data?.entities?.length
-              ? data.entities
-              : [
-                  { id: "1", name: "Karani Markets LLC", slug: "trading", type: "Trading", taxSchedule: "Schedule C", description: "Futures trading via NinjaTrader" },
-                  { id: "2", name: "Ilai Collective LLC", slug: "creative", type: "Creative", taxSchedule: "Schedule C", description: "Podcast, design, content" },
-                ]
-            ).map((e) => (
-              <div key={e.id} className="p-3.5 rounded-xl bg-bg border border-border">
-                <div style={{ fontSize: 14 }} className="font-semibold text-t1">{e.name}</div>
-                <div style={{ fontSize: 14 }} className="text-t3 mt-0.5">
-                  {e.type} · {e.taxSchedule}
+          {data?.entities?.length ? (
+            <div className="space-y-3">
+              {data.entities.map((e) => (
+                <div key={e.id} className="p-3.5 rounded-xl bg-bg border border-border">
+                  <div style={{ fontSize: 14 }} className="font-semibold text-t1">{e.name}</div>
+                  <div style={{ fontSize: 14 }} className="text-t3 mt-0.5">
+                    {e.type} · {e.taxSchedule}
+                  </div>
+                  {e.description && <div style={{ fontSize: 13 }} className="text-t4 mt-1">{e.description}</div>}
                 </div>
-                {e.description && <div style={{ fontSize: 13 }} className="text-t4 mt-1">{e.description}</div>}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: 32 }}>
+              <div style={{ fontSize: 14, color: "#9C9A95" }}>No business entities configured</div>
+              <div style={{ fontSize: 12, color: "#9C9A95", marginTop: 4 }}>Complete onboarding to set up your entities</div>
+            </div>
+          )}
         </div>
 
         {/* Preferences */}

@@ -23,18 +23,6 @@ export async function getUser() {
     user = await prisma.user.create({
       data: { clerkId: userId, email, name },
     });
-
-    // Create defaults
-    await Promise.all([
-      prisma.incomeConfig.create({ data: { userId: user.id } }),
-      prisma.settings.create({ data: { userId: user.id } }),
-      prisma.entity.createMany({
-        data: [
-          { userId: user.id, slug: "trading", name: "Karani Markets LLC", type: "Trading", taxSchedule: "Schedule C", description: "Futures trading via NinjaTrader" },
-          { userId: user.id, slug: "creative", name: "Ilai Collective LLC", type: "Creative", taxSchedule: "Schedule C", description: "Podcast, design, content" },
-        ],
-      }),
-    ]);
   }
 
   return user;

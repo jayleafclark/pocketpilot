@@ -8,6 +8,7 @@ interface Bill {
   name: string;
   amount: number;
   dueDay: number;
+  dueMonth: number | null;
   frequency: string;
   vendor: string | null;
   category: string | null;
@@ -22,7 +23,8 @@ interface Account {
   name: string;
 }
 
-const empty = { name: "", amount: "", dueDay: "", frequency: "monthly", vendor: "", entity: "personal", accountId: "" };
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const empty = { name: "", amount: "", dueDay: "", frequency: "monthly", vendor: "", entity: "personal", accountId: "", dueMonth: "" };
 
 export default function BillsPage() {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -95,6 +97,7 @@ export default function BillsPage() {
       vendor: bill.vendor || "",
       entity: bill.entity,
       accountId: bill.accountId || "",
+      dueMonth: bill.dueMonth ? String(bill.dueMonth) : "",
     });
     setEditId(bill.id);
     setConfirmDelete(false);
@@ -110,6 +113,7 @@ export default function BillsPage() {
       vendor: form.vendor || null,
       entity: form.entity,
       accountId: form.accountId || null,
+      dueMonth: form.frequency !== "monthly" && form.dueMonth ? parseInt(form.dueMonth) : null,
     };
 
     if (modal === "add") {
@@ -335,13 +339,40 @@ export default function BillsPage() {
                 <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Frequency</label>
                 <select
                   value={form.frequency}
-                  onChange={(e) => setForm({ ...form, frequency: e.target.value })}
+                  onChange={(e) => {
+                    const freq = e.target.value;
+                    setForm({
+                      ...form,
+                      frequency: freq,
+                      dueMonth: freq === "monthly" ? "" : (form.dueMonth || String(new Date().getMonth() + 1)),
+                    });
+                  }}
                   className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                 >
                   <option value="monthly">Monthly</option>
                   <option value="quarterly">Quarterly</option>
                   <option value="annual">Annual</option>
                 </select>
+              </div>
+
+              {/* Due Month — only for Quarterly / Annual */}
+              <div style={{
+                overflow: "hidden",
+                maxHeight: form.frequency !== "monthly" ? 80 : 0,
+                opacity: form.frequency !== "monthly" ? 1 : 0,
+                transition: "max-height 200ms ease, opacity 200ms ease",
+              }}>
+                <div>
+                  <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Due Month</label>
+                  <select
+                    value={form.dueMonth || String(new Date().getMonth() + 1)}
+                    onChange={(e) => setForm({ ...form, dueMonth: e.target.value })}
+                    className="w-full rounded-[14px] border border-border bg-card text-[14px] text-t1 outline-none"
+                    style={{ height: 48 , padding: "0 14px" }}
+                  >
+                    {months.map((m, i) => <option key={m} value={String(i + 1)}>{m}</option>)}
+                  </select>
+                </div>
               </div>
 
               <div>

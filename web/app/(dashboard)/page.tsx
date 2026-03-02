@@ -79,22 +79,23 @@ export default function DashboardPage() {
 
   const unpaidBills = bills.filter((b) => !b.paidThisMonth);
   const unpaidTotal = unpaidBills.reduce((s, b) => s + b.amount, 0);
+  const hasDeposits = budget && budget.deposited > 0;
 
   if (loading) {
     return (
       <div>
-        <div style={{ marginBottom: 28 }}>
-          <div className="bg-bg3 rounded-lg animate-pulse" style={{ height: 32, width: 200, marginBottom: 8 }} />
+        <div style={{ marginBottom: 24 }}>
+          <div className="bg-bg3 rounded-lg animate-pulse" style={{ height: 36, width: 200, marginBottom: 8 }} />
           <div className="bg-bg3 rounded animate-pulse" style={{ height: 18, width: 280 }} />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-card border border-border animate-pulse" style={{ borderRadius: 14, padding: 24, height: 110 }} />
+            <div key={i} className="animate-pulse" style={{ borderRadius: 14, padding: 20, height: 110, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.055)" }} />
           ))}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 24 }}>
           {[1, 2].map((i) => (
-            <div key={i} className="bg-card border border-border animate-pulse" style={{ borderRadius: 14, padding: 24, height: 280 }} />
+            <div key={i} className="animate-pulse" style={{ borderRadius: 14, padding: 24, height: 280, background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.055)" }} />
           ))}
         </div>
       </div>
@@ -103,52 +104,60 @@ export default function DashboardPage() {
 
   const b = budget || { dailyBudget: 0, spentToday: 0, remaining: 0, monthPool: 0, deposited: 0, billsDueCount: 0, billsDueAmount: 0, savingsGoal: 0 };
 
+  const cardStyle: React.CSSProperties = {
+    background: "#FFFFFF",
+    borderRadius: 14,
+    border: "1px solid rgba(0,0,0,0.055)",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.03), 0 6px 24px rgba(0,0,0,0.03)",
+  };
+
   return (
     <div>
-      <div className="flex justify-between items-center" style={{ marginBottom: 28 }}>
-        <div>
-          <h1 className="font-bold text-t1" style={{ fontSize: 24, fontFamily: "var(--font-heading)" }}>
-            Dashboard
-          </h1>
-          <p className="text-t3" style={{ fontSize: 14, marginTop: 4 }}>{dateStr}</p>
-        </div>
+      {/* Page title */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 28, fontFamily: "var(--font-heading)", fontWeight: 600, color: "#1A1915" }}>
+          Dashboard
+        </h1>
+        <p style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 400, color: "#9C9A95", marginTop: 4 }}>{dateStr}</p>
       </div>
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
-          { l: "Month Pool", v: `$${Math.round(b.monthPool).toLocaleString()}`, c: "var(--color-ch)", s: "Income − bills − savings", href: "/analytics" },
-          { l: "Deposited", v: `$${Math.round(b.deposited).toLocaleString()}`, c: "var(--color-ok)", s: "Karani + Ilai this month", href: "/analytics" },
-          { l: "Bills Due", v: `$${Math.round(b.billsDueAmount)}`, c: "var(--color-warn)", s: `${b.billsDueCount} remaining`, href: "/bills" },
-          { l: "Savings", v: `$${Math.round(b.savingsGoal)}`, c: "var(--color-t1)", s: `$${Math.round(b.savingsGoal)}/mo target`, href: "/settings" },
+          { l: "Month Pool", v: `$${Math.round(b.monthPool).toLocaleString()}`, c: "#1A1915", s: "Income − bills − savings", href: "/analytics" },
+          { l: "Deposited", v: `$${Math.round(b.deposited).toLocaleString()}`, c: "#1A1915", s: "Karani + Ilai this month", href: "/analytics" },
+          { l: "Bills Due", v: `$${Math.round(b.billsDueAmount)}`, c: "#B09049", s: `${b.billsDueCount} remaining`, href: "/bills" },
+          { l: "Savings", v: `$${Math.round(b.savingsGoal)}`, c: "#1A1915", s: `$${Math.round(b.savingsGoal)}/mo target`, href: "/settings" },
         ].map((stat) => (
           <Link
             key={stat.l}
             href={stat.href}
-            className="bg-card border border-border no-underline transition-shadow hover:shadow-lg cursor-pointer"
-            style={{ borderRadius: 14, padding: 24, boxShadow: "0 1px 3px rgba(0,0,0,0.03), 0 6px 24px rgba(0,0,0,0.03)" }}
+            className="no-underline transition-shadow cursor-pointer"
+            style={{ ...cardStyle, padding: 20 }}
           >
-            <div className="text-t3 font-semibold uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>{stat.l}</div>
-            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-heading)", color: stat.c }}>
+            <div style={{ fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#9C9A95", marginBottom: 8 }}>
+              {stat.l}
+            </div>
+            <div style={{ fontSize: 28, fontFamily: "var(--font-mono)", fontWeight: 600, color: stat.c }}>
               {stat.v}
             </div>
-            <div className="text-t4" style={{ fontSize: 12, marginTop: 6 }}>{stat.s}</div>
+            <div style={{ fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 400, color: "#9C9A95", marginTop: 4 }}>{stat.s}</div>
           </Link>
         ))}
       </div>
 
-      {/* Two columns */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      {/* Two columns: 3fr 2fr */}
+      <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 24 }}>
         {/* Today's Transactions */}
-        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+        <div style={{ ...cardStyle, padding: 24 }}>
           <div className="flex justify-between items-center" style={{ marginBottom: 16 }}>
-            <span className="font-semibold text-t1" style={{ fontSize: 15 }}>Today&apos;s Transactions</span>
-            <Link href="/analytics" className="text-ch font-medium no-underline hover:underline" style={{ fontSize: 13 }}>
+            <span style={{ fontSize: 16, fontFamily: "var(--font-body)", fontWeight: 600, color: "#1A1915" }}>Today&apos;s Transactions</span>
+            <Link href="/analytics" className="no-underline" style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#B09049" }}>
               View all →
             </Link>
           </div>
           {txs.length === 0 ? (
-            <p className="text-t3 text-center" style={{ fontSize: 14, padding: "32px 0" }}>
+            <p style={{ fontSize: 14, fontFamily: "var(--font-body)", color: "#9C9A95", textAlign: "center", padding: "40px 0" }}>
               No spending yet today. Your budget is ${Math.round(b.dailyBudget)}.
             </p>
           ) : (
@@ -156,79 +165,87 @@ export default function DashboardPage() {
               <div
                 key={tx.id}
                 className="flex justify-between items-center"
-                style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid var(--color-border)" : "none" }}
+                style={{ padding: "12px 0", borderBottom: i < txs.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}
               >
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-t1" style={{ fontSize: 14 }}>{tx.merchant}</span>
-                    {!tx.category && (
-                      <span className="font-semibold text-ch bg-[rgba(176,144,73,0.07)]" style={{ fontSize: 11, padding: "3px 10px", borderRadius: 8 }}>
-                        New
-                      </span>
-                    )}
-                    {tx.entity && tx.entity !== "personal" && (
-                      <span className="font-semibold text-t3 bg-bg2" style={{ fontSize: 11, padding: "3px 10px", borderRadius: 8 }}>Biz</span>
-                    )}
-                  </div>
-                  <span className="text-t3 block" style={{ fontSize: 12, marginTop: 2 }}>
+                  <span style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>{tx.merchant}</span>
+                  <span className="block" style={{ fontSize: 12, fontFamily: "var(--font-body)", color: "#9C9A95", marginTop: 2 }}>
                     {tx.category || "Uncategorized"} ·{" "}
                     {new Date(tx.date).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                   </span>
                 </div>
-                <span className="font-medium text-t1" style={{ fontSize: 14, fontFamily: "var(--font-mono)" }}>
-                  -${tx.amount.toFixed(2)}
-                </span>
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ fontSize: 15, fontFamily: "var(--font-mono)", fontWeight: 600, color: "#1A1915" }}>
+                    -${tx.amount.toFixed(2)}
+                  </span>
+                  {tx.category && (
+                    <span className="block" style={{ fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, padding: "2px 8px", borderRadius: 10, background: "rgba(176,144,73,0.15)", color: "#B09049", marginTop: 4, display: "inline-block" }}>
+                      {tx.category}
+                    </span>
+                  )}
+                </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Upcoming Bills */}
-        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
-          <div className="flex justify-between items-center" style={{ marginBottom: 16 }}>
-            <span className="font-semibold text-t1" style={{ fontSize: 15 }}>Upcoming Bills</span>
-            <Link href="/bills" className="text-ch font-medium no-underline hover:underline" style={{ fontSize: 13 }}>
-              Manage →
-            </Link>
-          </div>
-          {unpaidBills.length === 0 ? (
-            <p className="text-ok text-center" style={{ fontSize: 14, padding: "32px 0" }}>All bills paid this month ✓</p>
-          ) : (
-            <>
-              {unpaidBills.slice(0, 4).map((bill, i) => (
-                <div
-                  key={bill.id}
-                  className="flex justify-between items-center"
-                  style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid var(--color-border)" : "none" }}
-                >
-                  <div className="flex items-center" style={{ gap: 10 }}>
-                    <button
-                      onClick={() => togglePaid(bill.id, bill.paidThisMonth)}
-                      className="border-2 border-warn bg-transparent cursor-pointer flex items-center justify-center transition-all hover:bg-[rgba(196,135,59,0.07)]"
-                      style={{ width: 20, height: 20, borderRadius: 10 }}
-                    />
-                    <div>
-                      <span className="font-medium text-t1" style={{ fontSize: 14 }}>{bill.name}</span>
-                      <span className="text-t3 block" style={{ fontSize: 12, marginTop: 1 }}>Due {bill.dueDay}th</span>
+        {/* Right column: Upcoming Bills + Transfer card */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ ...cardStyle, padding: 24 }}>
+            <div className="flex justify-between items-center" style={{ marginBottom: 16 }}>
+              <span style={{ fontSize: 16, fontFamily: "var(--font-body)", fontWeight: 600, color: "#1A1915" }}>Upcoming Bills</span>
+              <Link href="/bills" className="no-underline" style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#B09049" }}>
+                Manage →
+              </Link>
+            </div>
+            {unpaidBills.length === 0 ? (
+              <p style={{ fontSize: 14, fontFamily: "var(--font-body)", color: "#4CAF50", textAlign: "center", padding: "40px 0" }}>All bills paid this month ✓</p>
+            ) : (
+              <>
+                {unpaidBills.slice(0, 4).map((bill, i) => (
+                  <div
+                    key={bill.id}
+                    className="flex justify-between items-center"
+                    style={{ padding: "12px 0", borderBottom: i < Math.min(unpaidBills.length, 4) - 1 ? "1px solid rgba(0,0,0,0.06)" : "none" }}
+                  >
+                    <div className="flex items-center" style={{ gap: 12 }}>
+                      <button
+                        onClick={() => togglePaid(bill.id, bill.paidThisMonth)}
+                        className="border-2 bg-transparent cursor-pointer flex items-center justify-center transition-all"
+                        style={{
+                          width: 20, height: 20, borderRadius: "50%",
+                          borderColor: "#D4D0C8",
+                        }}
+                      />
+                      <div>
+                        <span style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>{bill.name}</span>
+                        <span className="block" style={{ fontSize: 12, fontFamily: "var(--font-body)", color: "#9C9A95" }}>Due {bill.dueDay}th</span>
+                      </div>
                     </div>
+                    <span style={{ fontSize: 15, fontFamily: "var(--font-mono)", fontWeight: 500, color: "#1A1915" }}>
+                      ${bill.amount}
+                    </span>
                   </div>
-                  <span className="font-medium text-warn" style={{ fontSize: 14, fontFamily: "var(--font-mono)" }}>
-                    ${bill.amount}
-                  </span>
-                </div>
-              ))}
-              {unpaidTotal > 0 && (
-                <div className="flex justify-between items-center" style={{ marginTop: 12, padding: "10px 16px", borderRadius: 10, backgroundColor: "rgba(176,144,73,0.035)" }}>
-                  <span className="text-t2" style={{ fontSize: 13 }}>
-                    Transfer{" "}
-                    <span className="text-ch font-semibold">${Math.round(unpaidTotal)}</span> to bills
-                  </span>
-                  <button className="font-semibold text-[#FFFDF5] border-none cursor-pointer" style={{ padding: "8px 18px", borderRadius: 10, fontSize: 13, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}>
-                    Done
-                  </button>
-                </div>
-              )}
-            </>
+                ))}
+                {unpaidBills.length > 4 && (
+                  <Link href="/bills" className="no-underline block" style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#B09049", textAlign: "center", marginTop: 12 }}>
+                    and {unpaidBills.length - 4} more →
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Transfer recommendation card */}
+          {unpaidBills.length > 0 && hasDeposits && (
+            <div style={{ background: "#F5F0E6", borderRadius: 14, padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>
+                Transfer ${Math.round(unpaidTotal)} to cover bills
+              </span>
+              <button style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 600, color: "#B09049", background: "none", border: "none", cursor: "pointer" }}>
+                Done
+              </button>
+            </div>
           )}
         </div>
       </div>
