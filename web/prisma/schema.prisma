@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  clerkId       String        @unique
+  email         String        @unique
+  name          String?
+  timezone      String        @default("America/New_York")
+  currency      String        @default("USD")
+  createdAt     DateTime      @default(now())
+
+  accounts      Account[]
+  transactions  Transaction[]
+  bills         Bill[]
+  incomeConfig  IncomeConfig?
+  entities      Entity[]
+  settings      Settings?
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  name          String
+  institution   String
+  last4         String
+  type          String
+  revolutId     String?       @unique
+  balance       Float         @default(0)
+  lastSynced    DateTime?
+  status        String        @default("connected")
+  createdAt     DateTime      @default(now())
+
+  transactions  Transaction[]
+}
+
+model Transaction {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  accountId        String?
+  account          Account?  @relation(fields: [accountId], references: [id])
+  revolutTxId      String?   @unique
+  merchant         String
+  amount           Float
+  type             String    @default("debit")
+  currency         String    @default("USD")
+  category         String?
+  entity           String    @default("personal")
+  date             DateTime
+  description      String?
+  receipt          Boolean   @default(false)
+  receiptUrl       String?
+  rationale        String?
+  note             String?
+  originalAmount   Float?
+  originalCurrency String?
+  isBill           Boolean   @default(false)
+  billId           String?
+  bill             Bill?     @relation(fields: [billId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, entity])
+  @@index([userId, category])
+}
+
+model Bill {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  name          String
+  amount        Float
+  dueDay        Int
+  dueMonth      Int?
+  frequency     String        @default("monthly")
+  vendor        String?
+  category      String?
+  entity        String        @default("personal")
+  accountId     String?
+  paidThisMonth Boolean       @default(false)
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  transactions  Transaction[]
+}
+
+model Entity {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  slug          String
+  name          String
+  type          String
+  taxSchedule   String        @default("Schedule C")
+  description   String?
+  createdAt     DateTime      @default(now())
+
+  @@unique([userId, slug])
+}
+
+model IncomeConfig {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+  karaniDailyAvg    Float     @default(400)
+  ilaiBiweekly      Float     @default(3000)
+  savingsGoal       Float     @default(800)
+  updatedAt         DateTime  @updatedAt
+}
+
+model Settings {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id])
+  taxYear             Int       @default(2026)
+  notificationsOn     Boolean   @default(true)
+  quietHoursStart     Int       @default(22)
+  quietHoursEnd       Int       @default(7)
+  oneSignalPlayerId   String?
+  currentStreak       Int       @default(0)
+  bestStreak          Int       @default(0)
+  lastUnderBudgetDate DateTime?
+  biometricEnabled    Boolean   @default(false)
+  updatedAt           DateTime  @updatedAt
+}
