@@ -4,15 +4,18 @@ FROM node:20-alpine AS base
 FROM base AS deps
 WORKDIR /app
 COPY web/package.json web/package-lock.json ./
+COPY web/prisma ./prisma
+COPY web/prisma.config.ts ./
 RUN npm ci
 
 # Build
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/generated ./generated
 COPY web/ .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npx prisma generate && npm run build
+RUN npm run build
 
 # Production
 FROM base AS runner
