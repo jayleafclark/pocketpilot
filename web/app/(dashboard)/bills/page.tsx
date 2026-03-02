@@ -147,13 +147,13 @@ export default function BillsPage() {
 
   const BillRow = ({ bill, i }: { bill: Bill; i: number }) => (
     <div
-      className="flex justify-between items-center px-5 py-3"
-      style={{ borderTop: i > 0 ? "1px solid var(--color-border)" : "none" }}
+      className="flex justify-between items-center"
+      style={{ padding: "12px 24px", borderTop: i > 0 ? "1px solid var(--color-border)" : "none" }}
     >
       <div className="flex items-center gap-3">
         <button
           onClick={() => togglePaid(bill.id, bill.paidThisMonth)}
-          className="w-[18px] h-[18px] rounded-full border-2 cursor-pointer flex items-center justify-center transition-all"
+          className="w-[20px] h-[20px] rounded-full border-2 cursor-pointer flex items-center justify-center transition-all"
           style={{
             borderColor: bill.paidThisMonth ? "var(--color-ok)" : "var(--color-warn)",
             backgroundColor: bill.paidThisMonth ? "var(--color-ok)" : "transparent",
@@ -167,7 +167,7 @@ export default function BillsPage() {
         </button>
         <div>
           <span
-            className="text-[13px] font-medium"
+            className="text-[14px] font-medium"
             style={{
               color: bill.paidThisMonth ? "var(--color-t3)" : "var(--color-t1)",
               textDecoration: bill.paidThisMonth ? "line-through" : "none",
@@ -176,19 +176,19 @@ export default function BillsPage() {
           >
             {bill.name}
           </span>
-          <span className="text-xs text-t3 block mt-0.5">
+          <span className="text-[12px] text-t3 block" style={{ marginTop: 1 }}>
             {bill.vendor ? `${bill.vendor} · ` : ""}Due {bill.dueDay}th
           </span>
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <span className="text-[13px] font-medium text-t1" style={{ fontFamily: "var(--font-mono)" }}>
+        <span className="text-[14px] font-medium text-t1" style={{ fontFamily: "var(--font-mono)" }}>
           ${bill.amount.toFixed(2)}
         </span>
-        <span className="text-[11px] text-t3">{bill.frequency}</span>
+        <span className="text-[13px] text-t3">{bill.frequency}</span>
         <button
           onClick={() => openEdit(bill)}
-          className="text-xs text-t3 bg-transparent border-none cursor-pointer hover:text-ch"
+          className="text-[14px] text-t3 bg-transparent border-none cursor-pointer hover:text-ch"
         >
           Edit
         </button>
@@ -199,10 +199,10 @@ export default function BillsPage() {
   if (loading) {
     return (
       <div>
-        <div className="h-8 w-32 bg-bg3 rounded-lg animate-pulse mb-6" />
-        <div className="grid grid-cols-3 gap-3.5 mb-6">
+        <div className="h-8 w-32 bg-bg3 rounded-lg animate-pulse mb-7" />
+        <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-[14px] p-5 border border-border h-24 animate-pulse" />
+            <div key={i} className="bg-card rounded-[14px] p-6 border border-border h-24 animate-pulse" />
           ))}
         </div>
       </div>
@@ -211,43 +211,43 @@ export default function BillsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 className="text-[26px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Bills</h1>
-          <p className="text-sm text-t3 mt-1">Recurring expenses and subscriptions</p>
+          <h1 className="text-[24px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Bills</h1>
+          <p className="text-[14px] text-t3" style={{ marginTop: 4 }}>Recurring expenses and subscriptions</p>
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          className="flex items-center gap-1.5 rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+          style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
         >
           {Icons.plus} Add Bill
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3.5 mb-6">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
           { l: "Monthly Total", v: `$${Math.round(totalMonthly).toLocaleString()}`, c: "var(--color-t1)" },
           { l: "Paid This Month", v: `$${Math.round(paidTotal).toLocaleString()}`, c: "var(--color-ok)" },
           { l: "Still Due", v: `$${Math.round(dueTotal).toLocaleString()}`, c: "var(--color-warn)" },
         ].map((s) => (
-          <div key={s.l} className="bg-card rounded-[14px] p-5 border border-border">
-            <div className="text-[11px] text-t3 font-medium uppercase tracking-[0.08em] mb-1">{s.l}</div>
-            <div className="text-[22px] font-bold" style={{ fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
+          <div key={s.l} className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+            <div className="text-[11px] text-t3 font-medium uppercase" style={{ letterSpacing: "0.08em", marginBottom: 8 }}>{s.l}</div>
+            <div className="text-[28px] font-bold" style={{ fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
           </div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="mb-5 flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-border bg-card max-w-[320px]">
+      <div className="mb-5 flex items-center gap-2.5 px-4 py-2.5 border border-border bg-card max-w-[320px]" style={{ borderRadius: 14 }}>
         <span className="text-t4 flex">{Icons.search}</span>
         <input
           data-search
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search bills..."
-          className="border-none outline-none text-[13px] text-t1 bg-transparent flex-1"
+          className="border-none outline-none text-[14px] text-t1 bg-transparent flex-1"
           style={{ fontFamily: "var(--font-body)" }}
         />
         {search && (
@@ -256,12 +256,12 @@ export default function BillsPage() {
       </div>
 
       {bills.length === 0 ? (
-        <div className="bg-card rounded-[14px] border border-border p-12 text-center">
-          <p className="text-t3 mb-4">No recurring bills yet. Add your first bill to get started.</p>
+        <div className="bg-card border border-border p-12 text-center" style={{ borderRadius: 14 }}>
+          <p className="text-t3 mb-4 text-[14px]">No recurring bills yet. Add your first bill to get started.</p>
           <button
             onClick={openAdd}
-            className="px-5 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-            style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+            className="rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+            style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
           >
             + Add Bill
           </button>
@@ -270,9 +270,9 @@ export default function BillsPage() {
         <>
           {/* Personal */}
           {personal.length > 0 && (
-            <div className="bg-card rounded-[14px] border border-border overflow-hidden mb-4">
-              <div className="px-5 py-3 border-b border-border">
-                <span className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em]">Personal & Household</span>
+            <div className="bg-card border border-border overflow-hidden mb-4" style={{ borderRadius: 14 }}>
+              <div className="border-b border-border" style={{ padding: "16px 24px" }}>
+                <span className="text-[14px] font-semibold text-t3 uppercase tracking-[0.08em]">Personal & Household</span>
               </div>
               {personal.map((b, i) => <BillRow key={b.id} bill={b} i={i} />)}
             </div>
@@ -280,16 +280,16 @@ export default function BillsPage() {
 
           {/* Business */}
           {business.length > 0 && (
-            <div className="bg-card rounded-[14px] border border-border overflow-hidden">
-              <div className="px-5 py-3 border-b border-border">
-                <span className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em]">Business Subscriptions</span>
+            <div className="bg-card border border-border overflow-hidden" style={{ borderRadius: 14 }}>
+              <div className="border-b border-border" style={{ padding: "16px 24px" }}>
+                <span className="text-[14px] font-semibold text-t3 uppercase tracking-[0.08em]">Business Subscriptions</span>
               </div>
               {business.map((b, i) => <BillRow key={b.id} bill={b} i={i} />)}
             </div>
           )}
 
           {filtered.length === 0 && search && (
-            <div className="text-center py-10 text-t3 text-sm">No bills match your search.</div>
+            <div className="text-center py-10 text-t3 text-[14px]">No bills match your search.</div>
           )}
         </>
       )}
@@ -300,11 +300,11 @@ export default function BillsPage() {
           <div className="absolute inset-0 bg-black/25 backdrop-blur-[4px]" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-card rounded-[20px] p-7 w-[90%] max-w-[480px] max-h-[80vh] overflow-y-auto"
-            style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}
+            className="relative bg-card w-[90%] max-w-[480px] max-h-[80vh] overflow-y-auto"
+            style={{ borderRadius: 20, padding: "28px 32px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>
+              <h3 className="text-[18px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>
                 {modal === "add" ? "Add Bill" : "Edit Bill"}
               </h3>
               <button onClick={() => setModal(null)} className="bg-transparent border-none cursor-pointer text-t3 text-xl leading-none">
@@ -319,24 +319,24 @@ export default function BillsPage() {
                 { label: "Due Day", key: "dueDay", placeholder: "20", type: "number" },
               ].map((f) => (
                 <div key={f.key}>
-                  <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">{f.label}</label>
+                  <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">{f.label}</label>
                   <input
                     type={f.type || "text"}
                     value={form[f.key as keyof typeof form]}
                     onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
                     placeholder={f.placeholder}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                     style={{ fontFamily: f.type === "number" ? "var(--font-mono)" : "var(--font-body)" }}
                   />
                 </div>
               ))}
 
               <div>
-                <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Frequency</label>
+                <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Frequency</label>
                 <select
                   value={form.frequency}
                   onChange={(e) => setForm({ ...form, frequency: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                 >
                   <option value="monthly">Monthly</option>
                   <option value="quarterly">Quarterly</option>
@@ -345,11 +345,11 @@ export default function BillsPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Entity</label>
+                <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Entity</label>
                 <select
                   value={form.entity}
                   onChange={(e) => setForm({ ...form, entity: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                 >
                   <option value="personal">Personal</option>
                   <option value="trading">Karani Markets</option>
@@ -358,22 +358,22 @@ export default function BillsPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Vendor (optional)</label>
+                <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Vendor (optional)</label>
                 <input
                   value={form.vendor}
                   onChange={(e) => setForm({ ...form, vendor: e.target.value })}
                   placeholder="GEICO"
-                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                 />
               </div>
 
               {accounts.length > 0 && (
                 <div>
-                  <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Pay From</label>
+                  <label className="text-[12px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">Pay From</label>
                   <select
                     value={form.accountId}
                     onChange={(e) => setForm({ ...form, accountId: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                    className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[14px] text-t1 outline-none"
                   >
                     <option value="">None</option>
                     {accounts.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -387,18 +387,18 @@ export default function BillsPage() {
                 <div>
                   {confirmDelete ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-red">Delete {form.name}?</span>
-                      <button onClick={deleteBill} className="text-xs font-semibold text-red bg-[rgba(184,92,92,0.07)] px-3 py-1.5 rounded-lg border-none cursor-pointer">
+                      <span className="text-[14px] text-red">Delete {form.name}?</span>
+                      <button onClick={deleteBill} className="text-[14px] font-semibold text-red bg-[rgba(184,92,92,0.07)] px-3 py-1.5 rounded-lg border-none cursor-pointer">
                         Confirm
                       </button>
-                      <button onClick={() => setConfirmDelete(false)} className="text-xs text-t3 bg-transparent border-none cursor-pointer">
+                      <button onClick={() => setConfirmDelete(false)} className="text-[14px] text-t3 bg-transparent border-none cursor-pointer">
                         Cancel
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={() => setConfirmDelete(true)}
-                      className="text-xs font-medium text-red bg-[rgba(184,92,92,0.07)] px-3 py-1.5 rounded-lg border border-[rgba(184,92,92,0.12)] cursor-pointer"
+                      className="text-[14px] font-medium text-red bg-[rgba(184,92,92,0.07)] px-3 py-1.5 rounded-lg border border-[rgba(184,92,92,0.12)] cursor-pointer"
                     >
                       Delete Bill
                     </button>
@@ -406,14 +406,14 @@ export default function BillsPage() {
                 </div>
               )}
               <div className={`flex gap-2 ${modal === "add" ? "ml-auto" : ""}`}>
-                <button onClick={() => setModal(null)} className="px-5 py-2.5 rounded-[10px] text-[13px] font-medium text-t2 bg-transparent border border-border cursor-pointer">
+                <button onClick={() => setModal(null)} className="rounded-[10px] text-[14px] font-medium text-t2 bg-transparent border border-border cursor-pointer" style={{ padding: "10px 22px" }}>
                   Cancel
                 </button>
                 <button
                   onClick={saveBill}
                   disabled={!form.name || !form.amount || !form.dueDay}
-                  className="px-5 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#FFFDF5] border-none cursor-pointer disabled:opacity-50"
-                  style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+                  className="rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer disabled:opacity-50"
+                  style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
                 >
                   {modal === "add" ? "Add Bill" : "Save Changes"}
                 </button>

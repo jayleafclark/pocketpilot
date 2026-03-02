@@ -32,8 +32,8 @@ export default function Sidebar() {
 
   useEffect(() => {
     fetch("/api/budget")
-      .then((r) => r.json())
-      .then(setBudget)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBudget(d); })
       .catch(() => {});
   }, [pathname]);
 
@@ -44,54 +44,67 @@ export default function Sidebar() {
   const displayName = user?.firstName || "User";
 
   return (
-    <div className="w-64 flex-shrink-0 bg-card border-r border-border flex flex-col" style={{ padding: "20px 0" }}>
+    <div
+      className="flex-shrink-0 bg-card border-r border-border flex flex-col"
+      style={{ width: 260, padding: "20px 0" }}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 pb-5">
+      <div className="flex items-center gap-3" style={{ padding: "0 20px 20px" }}>
         <div
-          className="w-[30px] h-[30px] flex items-center justify-center"
+          className="flex items-center justify-center"
           style={{
+            width: 32,
+            height: 32,
             borderRadius: 8,
             background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))",
           }}
         >
-          <span className="text-[13px] font-extrabold text-[#FFFDF5]" style={{ fontFamily: "var(--font-heading)" }}>
+          <span className="font-extrabold text-[#FFFDF5]" style={{ fontSize: 14, fontFamily: "var(--font-heading)" }}>
             P
           </span>
         </div>
-        <span className="text-[13px] font-semibold text-t1 tracking-[0.06em]">PocketPilot</span>
+        <span className="font-semibold text-t1" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
+          PocketPilot
+        </span>
       </div>
 
       {/* Budget Arc Card */}
-      <Link href="/" className="block mx-3.5 mb-5 no-underline">
+      <Link href="/" className="block no-underline" style={{ margin: "0 14px 20px" }}>
         <div
-          className="p-4 rounded-2xl bg-bg border border-border cursor-pointer hover:border-[rgba(0,0,0,0.09)] transition-all"
+          className="bg-bg border border-border cursor-pointer hover:border-[rgba(0,0,0,0.09)] transition-all"
+          style={{ padding: "20px 16px", borderRadius: 16 }}
         >
-          <div className="flex flex-col items-center gap-1.5">
-            <div className="relative w-[100px] h-[100px]">
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative" style={{ width: 100, height: 100 }}>
               <Arc pct={b.pct} size={100} sw={5} />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
-                  className="text-[26px] font-bold"
+                  className="font-bold"
                   style={{
+                    fontSize: 26,
                     fontFamily: "var(--font-heading)",
                     color: isOver ? "var(--color-red)" : "var(--color-t1)",
                   }}
                 >
                   {isOver ? `-$${Math.abs(Math.round(b.remaining))}` : `$${Math.round(b.remaining)}`}
                 </span>
-                <span className="text-[9px] text-t3 uppercase tracking-[0.06em] mt-0.5">
+                <span className="text-t3 uppercase" style={{ fontSize: 9, letterSpacing: "0.06em", marginTop: 2 }}>
                   {isOver ? "over" : "left"}
                 </span>
               </div>
             </div>
-            <span className="text-xs text-t3">of ${Math.round(b.dailyBudget)} daily budget</span>
+            <span className="text-t3" style={{ fontSize: 12 }}>
+              of ${Math.round(b.dailyBudget)} daily budget
+            </span>
           </div>
 
           {/* Progress bar */}
-          <div className="h-1 rounded-sm bg-bg3 mt-3">
+          <div className="bg-bg3" style={{ height: 4, borderRadius: 2, marginTop: 12 }}>
             <div
-              className="h-1 rounded-sm transition-all duration-600"
+              className="transition-all duration-600"
               style={{
+                height: 4,
+                borderRadius: 2,
                 width: `${Math.min(b.pct, 1) * 100}%`,
                 backgroundColor: isOver ? "var(--color-red)" : "var(--color-ch)",
               }}
@@ -99,14 +112,14 @@ export default function Sidebar() {
           </div>
 
           {/* Spent / Pool */}
-          <div className="flex justify-between mt-2">
-            <span className="text-[11px] text-t3">
+          <div className="flex justify-between" style={{ marginTop: 8 }}>
+            <span className="text-t3" style={{ fontSize: 11 }}>
               Spent:{" "}
               <span className="text-t1 font-medium" style={{ fontFamily: "var(--font-mono)" }}>
                 ${Math.round(b.spentToday)}
               </span>
             </span>
-            <span className="text-[11px] text-t3">
+            <span className="text-t3" style={{ fontSize: 11 }}>
               Pool:{" "}
               <span className="text-ch font-medium" style={{ fontFamily: "var(--font-mono)" }}>
                 ${Math.round(b.monthPool)}
@@ -117,15 +130,19 @@ export default function Sidebar() {
       </Link>
 
       {/* Navigation */}
-      <div className="flex-1 px-2.5 flex flex-col gap-0.5">
+      <div className="flex-1 flex flex-col" style={{ padding: "0 10px", gap: 2 }}>
         {nav.map((n) => {
           const active = pathname === n.id || (n.id !== "/" && pathname.startsWith(n.id));
           return (
             <Link
               key={n.id}
               href={n.id}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg no-underline transition-all text-[13px]"
+              className="flex items-center no-underline transition-all"
               style={{
+                gap: 10,
+                padding: "10px 12px",
+                borderRadius: 8,
+                fontSize: 14,
                 backgroundColor: active ? "rgba(176,144,73,0.07)" : "transparent",
                 color: active ? "var(--color-ch)" : "var(--color-t2)",
                 fontWeight: active ? 600 : 400,
@@ -141,14 +158,17 @@ export default function Sidebar() {
       </div>
 
       {/* Keyboard hint */}
-      <div className="px-3.5 pb-2 text-[10px] text-t4">Press 1-6 to navigate</div>
+      <div className="text-t4" style={{ padding: "0 14px 8px", fontSize: 11 }}>Press 1-6 to navigate</div>
 
       {/* Profile + Logout */}
-      <div className="px-3.5 pt-3 border-t border-border flex justify-between items-center">
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center" style={{ padding: "12px 14px", borderTop: "1px solid var(--color-border)" }}>
+        <div className="flex items-center gap-2.5">
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
+            className="rounded-full flex items-center justify-center font-semibold"
             style={{
+              width: 30,
+              height: 30,
+              fontSize: 13,
               border: "1.5px solid rgba(176,144,73,0.19)",
               color: "var(--color-ch)",
               fontFamily: "var(--font-heading)",
@@ -156,7 +176,7 @@ export default function Sidebar() {
           >
             {initial}
           </div>
-          <span className="text-xs text-t2">{displayName}</span>
+          <span className="text-t2" style={{ fontSize: 13 }}>{displayName}</span>
         </div>
         <button
           onClick={() => signOut({ redirectUrl: "/sign-in" })}

@@ -71,10 +71,10 @@ export default function AccountsPage() {
   if (loading) {
     return (
       <div>
-        <div className="h-8 w-44 bg-bg3 rounded-lg animate-pulse mb-6" />
-        <div className="grid grid-cols-3 gap-3.5 mb-6">
+        <div className="h-8 w-44 bg-bg3 rounded-lg animate-pulse mb-7" />
+        <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-[14px] p-5 border border-border h-24 animate-pulse" />
+            <div key={i} className="bg-card rounded-[14px] p-6 border border-border h-24 animate-pulse" />
           ))}
         </div>
       </div>
@@ -83,53 +83,53 @@ export default function AccountsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 className="text-[26px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Accounts</h1>
-          <p className="text-sm text-t3 mt-1">Connected accounts and balances</p>
+          <h1 className="font-bold text-t1" style={{ fontSize: 24, fontFamily: "var(--font-heading)" }}>Accounts</h1>
+          <p className="text-t3" style={{ fontSize: 14, marginTop: 4 }}>Connected accounts and balances</p>
         </div>
         <button
           onClick={() => setModal(true)}
-          className="flex items-center gap-1.5 px-5 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          className="flex items-center gap-1.5 font-semibold text-[#FFFDF5] border-none cursor-pointer"
+          style={{ fontSize: 14, padding: "10px 22px", borderRadius: 10, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
         >
           {Icons.plus} Connect Account
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3.5 mb-6">
+      <div className="grid" style={{ gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
           { l: "Total Assets", v: `$${totalAssets.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, c: "var(--color-ok)" },
           { l: "Total Debt", v: totalDebt < 0 ? `-$${Math.abs(totalDebt).toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "$0", c: "var(--color-red)" },
           { l: "Net Position", v: `$${netPosition.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, c: "var(--color-t1)" },
         ].map((s) => (
-          <div key={s.l} className="bg-card rounded-[14px] p-5 border border-border">
-            <div className="text-[11px] text-t3 font-medium uppercase tracking-[0.08em] mb-1">{s.l}</div>
-            <div className="text-[22px] font-bold" style={{ fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
+          <div key={s.l} className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+            <div className="text-t3 font-medium uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>{s.l}</div>
+            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
           </div>
         ))}
       </div>
 
       {accounts.length === 0 ? (
         <div className="bg-card rounded-[14px] border border-border p-12 text-center">
-          <p className="text-t3 mb-4">Connect your first account to get started.</p>
+          <p className="text-t3 mb-4" style={{ fontSize: 14 }}>Connect your first account to get started.</p>
           <button
             onClick={() => setModal(true)}
-            className="px-5 py-2.5 rounded-[10px] text-[13px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-            style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+            className="font-semibold text-[#FFFDF5] border-none cursor-pointer"
+            style={{ fontSize: 14, padding: "10px 22px", borderRadius: 10, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
           >
             + Connect Account
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-2 mb-4" style={{ gap: 16 }}>
           {accounts.map((a) => (
-            <div key={a.id} className="bg-card rounded-[14px] p-5 border border-border">
+            <div key={a.id} className="bg-card border border-border" style={{ borderRadius: 14, padding: "20px 24px" }}>
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="text-sm font-semibold text-t1">{a.name}</div>
-                  <div className="text-xs text-t3 mt-0.5">{a.institution} ••{a.last4}</div>
+                  <div className="font-semibold text-t1" style={{ fontSize: 16 }}>{a.name}</div>
+                  <div className="text-t3 mt-0.5" style={{ fontSize: 13 }}>{a.institution} ••{a.last4}</div>
                 </div>
                 <span
                   className="text-[10px] font-semibold px-2 py-0.5 rounded-md"
@@ -143,8 +143,9 @@ export default function AccountsPage() {
               </div>
 
               <div
-                className="text-2xl font-bold mb-2"
+                className="font-bold mb-2"
                 style={{
+                  fontSize: 28,
                   fontFamily: "var(--font-heading)",
                   color: a.balance < 0 ? "var(--color-red)" : "var(--color-t1)",
                   opacity: a.status === "disconnected" ? 0.4 : 1,
@@ -153,7 +154,7 @@ export default function AccountsPage() {
                 {a.balance < 0 ? "-" : ""}${Math.abs(a.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
 
-              <div className="text-[11px] text-t3 mb-3">
+              <div className="text-t3 mb-3" style={{ fontSize: 13 }}>
                 {a.type} · Synced {timeSince(a.lastSynced)}
               </div>
 
@@ -162,7 +163,8 @@ export default function AccountsPage() {
                   <button
                     onClick={() => syncAccount(a.id)}
                     disabled={syncing === a.id}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-t2 bg-transparent border border-border cursor-pointer hover:border-[rgba(0,0,0,0.09)] disabled:opacity-50"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-t2 bg-transparent border border-border cursor-pointer hover:border-[rgba(0,0,0,0.09)] disabled:opacity-50"
+                    style={{ fontSize: 13 }}
                   >
                     <span className={syncing === a.id ? "animate-spin" : ""}>{Icons.refresh}</span>
                     {syncing === a.id ? "Syncing..." : "Refresh"}
@@ -171,24 +173,25 @@ export default function AccountsPage() {
                 {a.status !== "disconnected" ? (
                   confirmDisconnect === a.id ? (
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-red">Disconnect?</span>
-                      <button onClick={() => disconnectAccount(a.id)} className="text-xs font-semibold text-red bg-[rgba(184,92,92,0.07)] px-2.5 py-1 rounded-lg border-none cursor-pointer">
+                      <span className="text-red" style={{ fontSize: 13 }}>Disconnect?</span>
+                      <button onClick={() => disconnectAccount(a.id)} className="font-semibold text-red bg-[rgba(184,92,92,0.07)] px-2.5 py-1 rounded-lg border-none cursor-pointer" style={{ fontSize: 13 }}>
                         Yes
                       </button>
-                      <button onClick={() => setConfirmDisconnect(null)} className="text-xs text-t3 bg-transparent border-none cursor-pointer">
+                      <button onClick={() => setConfirmDisconnect(null)} className="text-t3 bg-transparent border-none cursor-pointer" style={{ fontSize: 13 }}>
                         No
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={() => setConfirmDisconnect(a.id)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-red bg-[rgba(184,92,92,0.07)] border border-[rgba(184,92,92,0.12)] cursor-pointer"
+                      className="px-3 py-1.5 rounded-lg font-medium text-red bg-[rgba(184,92,92,0.07)] border border-[rgba(184,92,92,0.12)] cursor-pointer"
+                      style={{ fontSize: 13 }}
                     >
                       Disconnect
                     </button>
                   )
                 ) : (
-                  <button className="px-3 py-1.5 rounded-lg text-xs font-medium text-ch bg-transparent border border-border cursor-pointer">
+                  <button className="px-3 py-1.5 rounded-lg font-medium text-ch bg-transparent border border-border cursor-pointer" style={{ fontSize: 13 }}>
                     Reconnect
                   </button>
                 )}
@@ -199,18 +202,19 @@ export default function AccountsPage() {
           {/* Add card */}
           <div
             onClick={() => setModal(true)}
-            className="rounded-[14px] p-5 border-2 border-dashed border-border cursor-pointer flex flex-col items-center justify-center gap-2 hover:border-ch transition-colors min-h-[180px]"
+            className="border-2 border-dashed border-border cursor-pointer flex flex-col items-center justify-center gap-2 hover:border-ch transition-colors min-h-[180px]"
+            style={{ borderRadius: 14, padding: "20px 24px" }}
           >
             <span className="text-t4">{Icons.plus}</span>
-            <span className="text-sm font-medium text-t3">Connect a new account</span>
-            <span className="text-[11px] text-t4">Revolut · Plaid · Manual</span>
+            <span className="font-medium text-t3" style={{ fontSize: 14 }}>Connect a new account</span>
+            <span className="text-t4" style={{ fontSize: 14 }}>Revolut · Plaid · Manual</span>
           </div>
         </div>
       )}
 
       {/* Sync Configuration */}
       <div className="bg-card rounded-[14px] border border-border p-5">
-        <h3 className="text-sm font-semibold text-t1 mb-3">Sync Configuration</h3>
+        <h3 className="font-semibold text-t1 mb-3" style={{ fontSize: 14 }}>Sync Configuration</h3>
         <div className="space-y-2">
           {[
             { method: "Revolut Business API", schedule: "Every 2 hours" },
@@ -219,8 +223,8 @@ export default function AccountsPage() {
             { method: "Manual Refresh", schedule: "Anytime" },
           ].map((s) => (
             <div key={s.method} className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
-              <span className="text-xs text-t2">{s.method}</span>
-              <span className="text-xs text-t3" style={{ fontFamily: "var(--font-mono)" }}>{s.schedule}</span>
+              <span className="text-t2" style={{ fontSize: 14 }}>{s.method}</span>
+              <span className="text-t3" style={{ fontSize: 14, fontFamily: "var(--font-mono)" }}>{s.schedule}</span>
             </div>
           ))}
         </div>
@@ -232,11 +236,11 @@ export default function AccountsPage() {
           <div className="absolute inset-0 bg-black/25 backdrop-blur-[4px]" />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-card rounded-[20px] p-7 w-[90%] max-w-[480px]"
-            style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}
+            className="relative bg-card w-[90%] max-w-[480px]"
+            style={{ borderRadius: 20, padding: "28px 32px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}
           >
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Connect Account</h3>
+              <h3 className="font-bold text-t1" style={{ fontSize: 18, fontFamily: "var(--font-heading)" }}>Connect Account</h3>
               <button onClick={() => setModal(false)} className="bg-transparent border-none cursor-pointer text-t3 text-xl leading-none">×</button>
             </div>
             <div className="space-y-3">
@@ -248,10 +252,11 @@ export default function AccountsPage() {
                 <button
                   key={opt.name}
                   onClick={() => { setModal(false); alert(`${opt.name} connection flow would open here`); }}
-                  className="w-full text-left p-4 rounded-[14px] border border-border bg-card hover:bg-bg transition-colors cursor-pointer"
+                  className="w-full text-left rounded-[14px] border border-border bg-card hover:bg-bg transition-colors cursor-pointer"
+                  style={{ padding: "16px" }}
                 >
-                  <div className="text-sm font-semibold text-t1">{opt.name}</div>
-                  <div className="text-xs text-t3 mt-0.5">{opt.desc}</div>
+                  <div className="font-semibold text-t1" style={{ fontSize: 14 }}>{opt.name}</div>
+                  <div className="text-t3 mt-0.5" style={{ fontSize: 14 }}>{opt.desc}</div>
                 </button>
               ))}
             </div>

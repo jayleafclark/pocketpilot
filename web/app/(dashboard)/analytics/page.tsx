@@ -82,11 +82,11 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div>
-        <div className="h-8 w-40 bg-bg3 rounded-lg animate-pulse mb-6" />
+        <div className="h-8 w-40 bg-bg3 rounded-lg animate-pulse mb-7" />
         <div className="bg-card rounded-[14px] border border-border h-64 animate-pulse mb-4" />
         <div className="grid grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-card rounded-[14px] p-5 border border-border h-40 animate-pulse" />
+            <div key={i} className="bg-card rounded-[14px] p-6 border border-border h-40 animate-pulse" />
           ))}
         </div>
       </div>
@@ -97,10 +97,10 @@ export default function AnalyticsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 className="text-[26px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Analytics</h1>
-          <p className="text-sm text-t3 mt-1">Income, spending, and tax insights</p>
+          <h1 style={{ fontSize: 24, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Analytics</h1>
+          <p style={{ fontSize: 14, marginTop: 4 }} className="text-t3">Income, spending, and tax insights</p>
         </div>
         <div className="flex gap-1.5">
           {[
@@ -111,8 +111,10 @@ export default function AnalyticsPage() {
             <button
               key={r.k}
               onClick={() => setRange(r.k)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all"
+              className="rounded-lg font-medium cursor-pointer transition-all"
               style={{
+                fontSize: 14,
+                padding: "8px 16px",
                 backgroundColor: range === r.k ? "rgba(176,144,73,0.07)" : "transparent",
                 color: range === r.k ? "var(--color-ch)" : "var(--color-t3)",
                 border: range === r.k ? "1px solid var(--color-ch)" : "1px solid var(--color-border)",
@@ -125,18 +127,18 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Income vs Spending Chart */}
-      <div className="bg-card rounded-[14px] p-5 border border-border mb-4">
-        <h3 className="text-sm font-semibold text-t1 mb-4">Income vs Spending</h3>
+      <div className="bg-card border border-border mb-4" style={{ borderRadius: 14, padding: 24 }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600 }} className="text-t1 mb-4">Income vs Spending</h3>
         {months.every((m) => m.income === 0 && m.spending === 0) ? (
-          <div className="py-10 text-center text-t3 text-sm">
+          <div className="py-10 text-center text-t3" style={{ fontSize: 14 }}>
             Not enough data yet. Chart will appear after your first month.
           </div>
         ) : (
           <>
-            <div className="flex items-end gap-3 h-48">
+            <div className="flex items-end gap-3" style={{ height: 192 }}>
               {months.map((m, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div className="flex gap-1 items-end h-40 w-full justify-center">
+                  <div className="flex gap-1 items-end w-full justify-center" style={{ height: 140 }}>
                     <div
                       className="w-[40%] rounded-t-md transition-all"
                       style={{
@@ -155,8 +157,9 @@ export default function AnalyticsPage() {
                     />
                   </div>
                   <span
-                    className="text-[11px] mt-1"
+                    className="mt-1"
                     style={{
+                      fontSize: 12,
                       color: i === months.length - 1 ? "var(--color-ch)" : "var(--color-t3)",
                       fontWeight: i === months.length - 1 ? 600 : 400,
                     }}
@@ -169,26 +172,26 @@ export default function AnalyticsPage() {
             <div className="flex gap-4 mt-3 justify-center">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: "rgba(93,140,90,0.5)" }} />
-                <span className="text-[11px] text-t3">Income</span>
+                <span style={{ fontSize: 12 }} className="text-t3">Income</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-sm" style={{ background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }} />
-                <span className="text-[11px] text-t3">Spending</span>
+                <span style={{ fontSize: 12 }} className="text-t3">Spending</span>
               </div>
             </div>
           </>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2" style={{ gap: 16 }}>
         {/* Savings Progress */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-3">Savings Progress</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600 }} className="text-t1 mb-3">Savings Progress</h3>
           {b.savingsGoal === 0 ? (
-            <p className="text-sm text-t3">Set a savings goal in Settings to track progress.</p>
+            <p style={{ fontSize: 14 }} className="text-t3">Set a savings goal in Settings to track progress.</p>
           ) : (
             <>
-              <div className="text-2xl font-bold text-ok mb-2" style={{ fontFamily: "var(--font-heading)" }}>
+              <div className="mb-2" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-ok)" }}>
                 ${(b.savingsGoal * new Date().getMonth()).toLocaleString()}
               </div>
               <div className="h-2 rounded bg-bg3 mb-1.5">
@@ -200,7 +203,7 @@ export default function AnalyticsPage() {
                   }}
                 />
               </div>
-              <span className="text-xs text-t3">
+              <span style={{ fontSize: 14 }} className="text-t3">
                 ${(b.savingsGoal * new Date().getMonth()).toLocaleString()} of ${(b.savingsGoal * 12).toLocaleString()} ({new Date().getMonth()} months)
               </span>
             </>
@@ -208,15 +211,15 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Daily Average */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-3">Daily Average</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600 }} className="text-t1 mb-3">Daily Average</h3>
           {dailyAvg === 0 ? (
-            <p className="text-sm text-t3">Spending data will appear after 7 days of activity.</p>
+            <p style={{ fontSize: 14 }} className="text-t3">Spending data will appear after 7 days of activity.</p>
           ) : (
             <>
-              <div className="text-2xl font-bold text-t1 mb-3" style={{ fontFamily: "var(--font-heading)" }}>
+              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-t1)" }}>
                 ${dailyAvg.toFixed(0)}
-                <span className="text-sm text-t3 font-normal ml-1">/day (30d avg)</span>
+                <span style={{ fontSize: 14, fontWeight: 400 }} className="text-t3 ml-1">/day (30d avg)</span>
               </div>
               <div className="space-y-1.5">
                 {[
@@ -224,8 +227,8 @@ export default function AnalyticsPage() {
                   { l: "30-day avg", v: `$${dailyAvg.toFixed(0)}` },
                 ].map((s) => (
                   <div key={s.l} className="flex justify-between py-1" style={{ borderTop: "1px solid var(--color-border)" }}>
-                    <span className="text-xs text-t3">{s.l}</span>
-                    <span className="text-xs text-t1 font-medium" style={{ fontFamily: "var(--font-mono)" }}>{s.v}</span>
+                    <span style={{ fontSize: 14 }} className="text-t3">{s.l}</span>
+                    <span style={{ fontSize: 14, fontFamily: "var(--font-mono)" }} className="text-t1 font-medium">{s.v}</span>
                   </div>
                 ))}
               </div>
@@ -234,17 +237,17 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top Categories */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-3">Top Categories</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600 }} className="text-t1 mb-3">Top Categories</h3>
           {topCats.length === 0 ? (
-            <p className="text-sm text-t3">Categorize some transactions to see your top spending categories.</p>
+            <p style={{ fontSize: 14 }} className="text-t3">Categorize some transactions to see your top spending categories.</p>
           ) : (
             <div className="space-y-3">
               {topCats.map(([cat, amt]) => (
                 <div key={cat}>
                   <div className="flex justify-between mb-1">
-                    <span className="text-xs text-t2">{cat}</span>
-                    <span className="text-xs text-t1 font-medium" style={{ fontFamily: "var(--font-mono)" }}>
+                    <span style={{ fontSize: 14 }} className="text-t2">{cat}</span>
+                    <span style={{ fontSize: 14, fontFamily: "var(--font-mono)" }} className="text-t1 font-medium">
                       ${Math.round(amt).toLocaleString()}
                     </span>
                   </div>
@@ -264,23 +267,23 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Tax Summary */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-3">Tax Summary</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 600 }} className="text-t1 mb-3">Tax Summary</h3>
           {tradingTotal === 0 && creativeTotal === 0 ? (
-            <p className="text-sm text-t3">No business expenses recorded yet.</p>
+            <p style={{ fontSize: 14 }} className="text-t3">No business expenses recorded yet.</p>
           ) : (
             <>
-              <div className="text-2xl font-bold text-ch mb-3" style={{ fontFamily: "var(--font-heading)" }}>
+              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-ch)" }}>
                 ${Math.round(tradingTotal + creativeTotal).toLocaleString()}
               </div>
               <div className="space-y-2">
                 {tradingTotal > 0 && (
                   <div className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
                     <div>
-                      <div className="text-xs font-medium text-t1">Karani Markets LLC</div>
-                      <div className="text-[11px] text-t3">Trading · Schedule C</div>
+                      <div style={{ fontSize: 14, fontWeight: 500 }} className="text-t1">Karani Markets LLC</div>
+                      <div style={{ fontSize: 14 }} className="text-t3">Trading · Schedule C</div>
                     </div>
-                    <span className="text-xs font-medium text-t1" style={{ fontFamily: "var(--font-mono)" }}>
+                    <span style={{ fontSize: 14, fontFamily: "var(--font-mono)", fontWeight: 500 }} className="text-t1">
                       ${Math.round(tradingTotal).toLocaleString()}
                     </span>
                   </div>
@@ -288,10 +291,10 @@ export default function AnalyticsPage() {
                 {creativeTotal > 0 && (
                   <div className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
                     <div>
-                      <div className="text-xs font-medium text-t1">Ilai Collective LLC</div>
-                      <div className="text-[11px] text-t3">Creative · Schedule C</div>
+                      <div style={{ fontSize: 14, fontWeight: 500 }} className="text-t1">Ilai Collective LLC</div>
+                      <div style={{ fontSize: 14 }} className="text-t3">Creative · Schedule C</div>
                     </div>
-                    <span className="text-xs font-medium text-t1" style={{ fontFamily: "var(--font-mono)" }}>
+                    <span style={{ fontSize: 14, fontFamily: "var(--font-mono)", fontWeight: 500 }} className="text-t1">
                       ${Math.round(creativeTotal).toLocaleString()}
                     </span>
                   </div>

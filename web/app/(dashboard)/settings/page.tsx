@@ -81,10 +81,10 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div>
-        <div className="h-8 w-36 bg-bg3 rounded-lg animate-pulse mb-6" />
-        <div className="space-y-4">
+        <div className="h-8 w-36 bg-bg3 rounded-lg animate-pulse mb-7" />
+        <div className="space-y-5">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-card rounded-[14px] p-5 border border-border h-40 animate-pulse" />
+            <div key={i} className="bg-card rounded-[14px] p-6 border border-border h-40 animate-pulse" />
           ))}
         </div>
       </div>
@@ -93,18 +93,18 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-[26px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Settings</h1>
-        <p className="text-sm text-t3 mt-1">Income configuration and preferences</p>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontSize: 24, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Settings</h1>
+        <p style={{ fontSize: 14, marginTop: 4 }} className="text-t3">Income configuration and preferences</p>
       </div>
 
-      <div className="space-y-4 max-w-2xl">
+      <div className="max-w-2xl" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         {/* Income Configuration */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-4">Income Configuration</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Income Configuration</h3>
           <div className="space-y-4">
             <div>
-              <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">
+              <label style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em" }} className="text-t3 uppercase mb-1.5 block">
                 Karani Markets — Daily Avg
               </label>
               <div className="relative">
@@ -113,20 +113,23 @@ export default function SettingsPage() {
                   value={karani}
                   onChange={(e) => setKarani(e.target.value)}
                   onBlur={() => saveField("karani")}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                  className="w-full border border-border bg-card text-t1 outline-none"
                   style={{
+                    fontSize: 14,
+                    padding: "10px 14px",
+                    borderRadius: 10,
                     fontFamily: "var(--font-mono)",
                     animation: saved === "karani" ? "flash-champagne 0.3s ease" : saveError === "karani" ? "flash-champagne 0.3s ease" : "none",
                     borderColor: saveError === "karani" ? "var(--color-red)" : undefined,
                   }}
                 />
                 {saved === "karani" && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-ok font-medium animate-[fadeUp_0.2s_ease]">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ok font-medium animate-[fadeUp_0.2s_ease]" style={{ fontSize: 13 }}>
                     Saved
                   </span>
                 )}
                 {saveError === "karani" && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-red font-medium">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red font-medium" style={{ fontSize: 13 }}>
                     Failed
                   </span>
                 )}
@@ -134,7 +137,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">
+              <label style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em" }} className="text-t3 uppercase mb-1.5 block">
                 Ilai Collective — Biweekly
               </label>
               <div className="relative">
@@ -143,26 +146,29 @@ export default function SettingsPage() {
                   value={ilai}
                   onChange={(e) => setIlai(e.target.value)}
                   onBlur={() => saveField("ilai")}
-                  className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
+                  className="w-full border border-border bg-card text-t1 outline-none"
                   style={{
+                    fontSize: 14,
+                    padding: "10px 14px",
+                    borderRadius: 10,
                     fontFamily: "var(--font-mono)",
                     borderColor: saveError === "ilai" ? "var(--color-red)" : undefined,
                   }}
                 />
                 {saved === "ilai" && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-ok font-medium">Saved</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ok font-medium" style={{ fontSize: 13 }}>Saved</span>
                 )}
               </div>
             </div>
 
             <div className="pt-2 border-t border-border">
-              <div className="text-sm font-medium text-t1">
+              <div style={{ fontSize: 14 }} className="font-medium text-t1">
                 Estimated Monthly:{" "}
                 <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-ch)" }}>
                   ${estimatedMonthly.toLocaleString()}
                 </span>
               </div>
-              <div className="text-xs text-t3 mt-1">
+              <div style={{ fontSize: 14 }} className="text-t3 mt-1">
                 ({karaniNum} × 22 trading days) + ({ilaiNum} × 2 pay periods)
               </div>
             </div>
@@ -170,10 +176,10 @@ export default function SettingsPage() {
         </div>
 
         {/* Budget Derivation */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-4">Budget Derivation</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Budget Derivation</h3>
           <div className="mb-4">
-            <label className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-1.5 block">
+            <label style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.08em" }} className="text-t3 uppercase mb-1.5 block">
               Monthly Savings Goal
             </label>
             <div className="relative">
@@ -182,11 +188,16 @@ export default function SettingsPage() {
                 value={savings}
                 onChange={(e) => setSavings(e.target.value)}
                 onBlur={() => saveField("savings")}
-                className="w-full px-3.5 py-2.5 rounded-[10px] border border-border bg-card text-[13px] text-t1 outline-none"
-                style={{ fontFamily: "var(--font-mono)" }}
+                className="w-full border border-border bg-card text-t1 outline-none"
+                style={{
+                  fontSize: 14,
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  fontFamily: "var(--font-mono)",
+                }}
               />
               {saved === "savings" && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-ok font-medium">Saved</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ok font-medium" style={{ fontSize: 13 }}>Saved</span>
               )}
             </div>
           </div>
@@ -199,16 +210,16 @@ export default function SettingsPage() {
               { l: `÷ ${daysInMonth} days`, v: "", c: "var(--color-t3)" },
             ].map((row) => (
               <div key={row.l} className="flex justify-between">
-                <span className="text-xs text-t3">{row.l}</span>
+                <span style={{ fontSize: 14 }} className="text-t3">{row.l}</span>
                 {row.v && (
-                  <span className="text-xs font-medium" style={{ fontFamily: "var(--font-mono)", color: row.c }}>
+                  <span className="font-medium" style={{ fontSize: 14, fontFamily: "var(--font-mono)", color: row.c }}>
                     {row.v}
                   </span>
                 )}
               </div>
             ))}
             <div className="flex justify-between pt-2 border-t border-border">
-              <span className="text-sm font-semibold text-t1">= Daily Budget</span>
+              <span style={{ fontSize: 14 }} className="font-semibold text-t1">= Daily Budget</span>
               <span
                 className="text-xl font-bold"
                 style={{ fontFamily: "var(--font-heading)", color: "var(--color-ch)" }}
@@ -220,8 +231,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Business Entities */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-4">Business Entities</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Business Entities</h3>
           <div className="space-y-3">
             {(data?.entities?.length
               ? data.entities
@@ -231,19 +242,19 @@ export default function SettingsPage() {
                 ]
             ).map((e) => (
               <div key={e.id} className="p-3.5 rounded-xl bg-bg border border-border">
-                <div className="text-sm font-semibold text-t1">{e.name}</div>
-                <div className="text-xs text-t3 mt-0.5">
+                <div style={{ fontSize: 14 }} className="font-semibold text-t1">{e.name}</div>
+                <div style={{ fontSize: 14 }} className="text-t3 mt-0.5">
                   {e.type} · {e.taxSchedule}
                 </div>
-                {e.description && <div className="text-xs text-t4 mt-1">{e.description}</div>}
+                {e.description && <div style={{ fontSize: 13 }} className="text-t4 mt-1">{e.description}</div>}
               </div>
             ))}
           </div>
         </div>
 
         {/* Preferences */}
-        <div className="bg-card rounded-[14px] p-5 border border-border">
-          <h3 className="text-sm font-semibold text-t1 mb-4">Preferences</h3>
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Preferences</h3>
           <div className="space-y-2">
             {[
               { l: "Tax Year", v: String(data?.settings?.taxYear || 2026) },
@@ -253,8 +264,8 @@ export default function SettingsPage() {
               { l: "Quiet Hours", v: `${data?.settings?.quietHoursStart || 22}:00–${data?.settings?.quietHoursEnd || 7}:00` },
             ].map((pref) => (
               <div key={pref.l} className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
-                <span className="text-xs text-t3">{pref.l}</span>
-                <span className="text-xs text-t1 font-medium">{pref.v}</span>
+                <span style={{ fontSize: 14 }} className="text-t3">{pref.l}</span>
+                <span style={{ fontSize: 14 }} className="text-t1 font-medium">{pref.v}</span>
               </div>
             ))}
           </div>
