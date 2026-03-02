@@ -33,13 +33,15 @@ export default function SettingsPage() {
   useEffect(() => {
     document.title = "Settings · PocketPilot";
     fetch("/api/settings")
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
+        if (!d) return;
         setData(d);
-        setKarani(String(d.incomeConfig.karaniDailyAvg));
-        setIlai(String(d.incomeConfig.ilaiBiweekly));
-        setSavings(String(d.incomeConfig.savingsGoal));
+        setKarani(String(d.incomeConfig?.karaniDailyAvg ?? 0));
+        setIlai(String(d.incomeConfig?.ilaiBiweekly ?? 0));
+        setSavings(String(d.incomeConfig?.savingsGoal ?? 0));
       })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

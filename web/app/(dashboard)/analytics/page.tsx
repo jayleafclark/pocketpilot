@@ -33,10 +33,11 @@ export default function AnalyticsPage() {
     from.setMonth(from.getMonth() - 6);
 
     Promise.all([
-      fetch("/api/budget").then((r) => r.json()),
-      fetch(`/api/transactions?from=${from.toISOString()}`).then((r) => r.json()),
+      fetch("/api/budget").then((r) => (r.ok ? r.json() : null)),
+      fetch(`/api/transactions?from=${from.toISOString()}`).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([b, t]) => { setBudget(b); setTxs(Array.isArray(t) ? t : []); })
+      .then(([b, t]) => { if (b) setBudget(b); setTxs(Array.isArray(t) ? t : []); })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

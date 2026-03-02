@@ -24,8 +24,9 @@ export default function AccountsPage() {
   useEffect(() => {
     document.title = "Accounts · PocketPilot";
     fetch("/api/accounts")
-      .then((r) => r.json())
-      .then(setAccounts)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setAccounts(Array.isArray(d) ? d : []))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

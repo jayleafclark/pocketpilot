@@ -26,8 +26,9 @@ export default function BusinessPage() {
   useEffect(() => {
     document.title = "Business · PocketPilot";
     fetch("/api/transactions?entity=trading,creative")
-      .then((r) => r.json())
-      .then(setTxs)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setTxs(Array.isArray(d) ? d : []))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

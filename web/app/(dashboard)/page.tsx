@@ -47,15 +47,16 @@ export default function DashboardPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/budget").then((r) => r.json()),
-      fetch("/api/transactions?date=today").then((r) => r.json()),
-      fetch("/api/bills").then((r) => r.json()),
+      fetch("/api/budget").then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/transactions?date=today").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/bills").then((r) => (r.ok ? r.json() : [])),
     ])
       .then(([b, t, bl]) => {
-        setBudget(b);
-        setTxs(t);
-        setBills(bl);
+        if (b) setBudget(b);
+        setTxs(Array.isArray(t) ? t : []);
+        setBills(Array.isArray(bl) ? bl : []);
       })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

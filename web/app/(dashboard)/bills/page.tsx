@@ -40,10 +40,14 @@ export default function BillsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/bills").then((r) => r.json()),
-      fetch("/api/accounts").then((r) => r.json()),
+      fetch("/api/bills").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/accounts").then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([b, a]) => { setBills(b); setAccounts(a); })
+      .then(([b, a]) => {
+        setBills(Array.isArray(b) ? b : []);
+        setAccounts(Array.isArray(a) ? a : []);
+      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
