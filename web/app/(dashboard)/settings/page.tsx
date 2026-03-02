@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useHousehold } from "@/lib/household-context";
 
 interface SettingsData {
   incomeConfig: {
@@ -29,6 +30,11 @@ export default function SettingsPage() {
   const [savings, setSavings] = useState("800");
   const [saved, setSaved] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { role, members, reload: reloadHousehold } = useHousehold();
+  const [invEmail, setInvEmail] = useState("");
+  const [invRole, setInvRole] = useState("viewer");
+  const [inviting, setInviting] = useState(false);
+  const [pendingInvites, setPendingInvites] = useState<{ id: string; email: string; role: string; createdAt: string }[]>([]);
 
   useEffect(() => {
     document.title = "Settings · PocketPilot";
@@ -44,6 +50,48 @@ export default function SettingsPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetch("/api/household/members")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d?.invites) setPendingInvites(d.invites); })
+      .catch(() => {});
+  }, []);
+
+  const sendInvite = async () => {
+    if (!invEmail.trim()) return;
+    setInviting(true);
+    try {
+      await fetch("/api/household/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invites: [{ email: invEmail.trim(), role: invRole }] }),
+      });
+      setInvEmail("");
+      reloadHousehold();
+      const res = await fetch("/api/household/members");
+      if (res.ok) { const d = await res.json(); setPendingInvites(d.invites || []); }
+    } catch { /* ignore */ }
+    setInviting(false);
+  };
+
+  const removeMember = async (memberId: string) => {
+    await fetch("/api/household/members", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ memberId }),
+    });
+    reloadHousehold();
+  };
+
+  const changeRole = async (memberId: string, newRole: string) => {
+    await fetch("/api/household/members", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ memberId, newRole }),
+    });
+    reloadHousehold();
+  };
 
   const karaniNum = parseFloat(karani) || 0;
   const ilaiNum = parseFloat(ilai) || 0;
@@ -249,6 +297,96 @@ export default function SettingsPage() {
             <div style={{ textAlign: "center", padding: 32 }}>
               <div style={{ fontSize: 14, color: "#9C9A95" }}>No business entities configured</div>
               <div style={{ fontSize: 12, color: "#9C9A95", marginTop: 4 }}>Complete onboarding to set up your entities</div>
+            </div>
+          )}
+        </div>
+
+        {/* Household Members */}
+        <div className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600 }} className="text-t1 mb-4">Household Members</h3>
+          <div className="space-y-2 mb-4">
+            {members.map((m) => (
+              <div key={m.id} className="flex justify-between items-center" style={{ padding: "10px 0", borderBottom: "1px solid var(--color-border)" }}>
+                <div>
+                  <span style={{ fontSize: 14 }} className="font-medium text-t1">{m.user.name || m.user.email}</span>
+                  {m.user.name && <span style={{ fontSize: 13 }} className="text-t3 ml-2">{m.user.email}</span>}
+                </div>
+                <div className="flex items-center gap-2">
+                  {role === "admin" && m.role !== "admin" ? (
+                    <select
+                      value={m.role}
+                      onChange={(e) => changeRole(m.id, e.target.value)}
+                      className="text-[12px] font-semibold border border-border rounded-md bg-card text-t2 cursor-pointer"
+                      style={{ padding: "2px 8px", height: 28 }}
+                    >
+                      <option value="coadmin">Co-Admin</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+                  ) : (
+                    <span
+                      className="text-[10px] font-semibold px-2 py-0.5 rounded-md"
+                      style={{ color: m.role === "admin" ? "var(--color-ch)" : "var(--color-t3)", background: m.role === "admin" ? "rgba(176,144,73,0.12)" : "var(--color-bg2)" }}
+                    >
+                      {m.role === "admin" ? "Admin" : m.role === "coadmin" ? "Co-Admin" : "Viewer"}
+                    </span>
+                  )}
+                  {role === "admin" && m.role !== "admin" && (
+                    <button
+                      onClick={() => removeMember(m.id)}
+                      className="text-red bg-transparent border-none cursor-pointer font-medium"
+                      style={{ fontSize: 12 }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pending invites */}
+          {pendingInvites.length > 0 && (
+            <div className="mb-4">
+              <div className="text-[11px] font-semibold text-t3 uppercase tracking-[0.08em] mb-2">Pending Invites</div>
+              {pendingInvites.map((inv) => (
+                <div key={inv.id} className="flex justify-between items-center py-2">
+                  <span style={{ fontSize: 13 }} className="text-t3">{inv.email}</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-bg2 text-t4">
+                    {inv.role} · Pending
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Invite form */}
+          {(role === "admin" || role === "coadmin") && (
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Email address"
+                value={invEmail}
+                onChange={(e) => setInvEmail(e.target.value)}
+                className="flex-1 border border-border bg-card text-t1 outline-none"
+                style={{ fontSize: 14, padding: "8px 12px", borderRadius: 10 }}
+              />
+              <select
+                value={invRole}
+                onChange={(e) => setInvRole(e.target.value)}
+                className="border border-border bg-card text-t2"
+                style={{ fontSize: 13, padding: "8px 10px", borderRadius: 10 }}
+              >
+                <option value="coadmin">Co-Admin</option>
+                <option value="viewer">Viewer</option>
+              </select>
+              <button
+                onClick={sendInvite}
+                disabled={inviting || !invEmail.trim()}
+                className="font-semibold text-[#FFFDF5] border-none cursor-pointer disabled:opacity-50"
+                style={{ fontSize: 13, padding: "8px 18px", borderRadius: 10, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+              >
+                {inviting ? "..." : "Invite"}
+              </button>
             </div>
           )}
         </div>

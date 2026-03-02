@@ -206,8 +206,13 @@ export default function AccountsPage() {
                 {a.balance < 0 ? "-" : ""}${Math.abs(a.balance).toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
 
-              <div className="text-t3 mb-3" style={{ fontSize: 13 }}>
-                {a.type} · Synced {timeSince(a.lastSynced)}
+              <div className="flex items-center gap-2 text-t3 mb-3" style={{ fontSize: 13 }}>
+                <span>{a.type} · Synced {timeSince(a.lastSynced)}</span>
+                {a.connectionType && a.connectionType !== "manual" && (
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded" style={{ background: "rgba(176,144,73,0.12)", color: "var(--color-ch)" }}>
+                    {a.connectionType === "plaid" ? "Plaid" : a.connectionType === "csv" ? "CSV" : a.connectionType}
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-2">
