@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireHousehold } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
 
     const [incomeConfig, settings, entities] = await Promise.all([
       prisma.incomeConfig.findUnique({ where: { userId: user.id } }),
       prisma.settings.findUnique({ where: { userId: user.id } }),
-      prisma.entity.findMany({ where: { userId: user.id } }),
+      prisma.entity.findMany({ where: { householdId } }),
     ]);
 
     return NextResponse.json({
@@ -43,7 +43,7 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireUser();
+    const { user } = await requireHousehold();
     const body = await request.json();
 
     // Upsert income config

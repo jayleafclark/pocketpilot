@@ -120,7 +120,7 @@ export default function BusinessPage() {
       <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
           {/* h1: fontSize 24, fontFamily var(--font-heading) */}
-          <h1 className="font-bold text-t1" style={{ fontSize: 24, fontFamily: "var(--font-heading)" }}>
+          <h1 className="font-bold text-t1" style={{ fontSize: 28, fontFamily: "var(--font-heading)" }}>
             Business Center
           </h1>
           {/* Subtitle: fontSize 14, marginTop 4 */}
@@ -129,8 +129,8 @@ export default function BusinessPage() {
         {/* Export button: fontSize 14, padding "10px 22px" */}
         <button
           onClick={exportCSV}
-          className="rounded-[10px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ fontSize: 14, padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))", boxShadow: "0 2px 12px rgba(176,144,73,0.12)" }}
+          className="rounded-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+          style={{ fontSize: 14, padding: "10px 22px", minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))", boxShadow: "0 2px 12px rgba(176,144,73,0.12)" }}
         >
           Export for Accountant
         </button>
@@ -160,7 +160,7 @@ export default function BusinessPage() {
             {l}
           </button>
         ))}
-        <div className="ml-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-border bg-card max-w-[320px]">
+        <div className="ml-auto flex items-center gap-2.5 px-4 rounded-xl border border-border bg-card max-w-[400px]" style={{ height: 44 }}>
           <span className="text-t4 flex">{Icons.search}</span>
           {/* Search input: fontSize 14 */}
           <input
@@ -192,7 +192,7 @@ export default function BusinessPage() {
             {/* Stat card label: fontSize 11, letterSpacing 0.08em, marginBottom 8 */}
             <div className="text-t3 font-medium uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>{s.l}</div>
             {/* Stat card value: fontSize 28, fontFamily var(--font-heading) */}
-            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-heading)", color: s.c }}>
+            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-mono)", color: s.c }}>
               {s.v}
             </div>
           </div>

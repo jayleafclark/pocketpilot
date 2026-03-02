@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
     <div>
       <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Analytics</h1>
+          <h1 style={{ fontSize: 28, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Analytics</h1>
           <p style={{ fontSize: 14, marginTop: 4 }} className="text-t3">Income, spending, and tax insights</p>
         </div>
         <div className="flex gap-1.5">
@@ -191,7 +191,7 @@ export default function AnalyticsPage() {
             <p style={{ fontSize: 14 }} className="text-t3">Set a savings goal in Settings to track progress.</p>
           ) : (
             <>
-              <div className="mb-2" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-ok)" }}>
+              <div className="mb-2" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-ok)" }}>
                 ${(b.savingsGoal * new Date().getMonth()).toLocaleString()}
               </div>
               <div className="h-2 rounded bg-bg3 mb-1.5">
@@ -217,7 +217,7 @@ export default function AnalyticsPage() {
             <p style={{ fontSize: 14 }} className="text-t3">Spending data will appear after 7 days of activity.</p>
           ) : (
             <>
-              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-t1)" }}>
+              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-t1)" }}>
                 ${dailyAvg.toFixed(0)}
                 <span style={{ fontSize: 14, fontWeight: 400 }} className="text-t3 ml-1">/day (30d avg)</span>
               </div>
@@ -273,7 +273,7 @@ export default function AnalyticsPage() {
             <p style={{ fontSize: 14 }} className="text-t3">No business expenses recorded yet.</p>
           ) : (
             <>
-              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-heading)", color: "var(--color-ch)" }}>
+              <div className="mb-3" style={{ fontSize: 28, fontWeight: 700, fontFamily: "var(--font-mono)", color: "var(--color-ch)" }}>
                 ${Math.round(tradingTotal + creativeTotal).toLocaleString()}
               </div>
               <div className="space-y-2">

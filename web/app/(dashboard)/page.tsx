@@ -141,7 +141,7 @@ export default function DashboardPage() {
             <div style={{ fontSize: 28, fontFamily: "var(--font-mono)", fontWeight: 600, color: stat.c }}>
               {stat.v}
             </div>
-            <div style={{ fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 400, color: "#9C9A95", marginTop: 4 }}>{stat.s}</div>
+            <div style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 400, color: "#9C9A95", marginTop: 4 }}>{stat.s}</div>
           </Link>
         ))}
       </div>
@@ -152,7 +152,7 @@ export default function DashboardPage() {
         <div style={{ ...cardStyle, padding: 24 }}>
           <div className="flex justify-between items-center" style={{ marginBottom: 16 }}>
             <span style={{ fontSize: 16, fontFamily: "var(--font-body)", fontWeight: 600, color: "#1A1915" }}>Today&apos;s Transactions</span>
-            <Link href="/analytics" className="no-underline" style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#B09049" }}>
+            <Link href="/analytics" className="no-underline" style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 600, color: "#B09049" }}>
               View all →
             </Link>
           </div>
@@ -194,7 +194,7 @@ export default function DashboardPage() {
           <div style={{ ...cardStyle, padding: 24 }}>
             <div className="flex justify-between items-center" style={{ marginBottom: 16 }}>
               <span style={{ fontSize: 16, fontFamily: "var(--font-body)", fontWeight: 600, color: "#1A1915" }}>Upcoming Bills</span>
-              <Link href="/bills" className="no-underline" style={{ fontSize: 14, fontFamily: "var(--font-body)", fontWeight: 500, color: "#B09049" }}>
+              <Link href="/bills" className="no-underline" style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 600, color: "#B09049" }}>
                 Manage →
               </Link>
             </div>

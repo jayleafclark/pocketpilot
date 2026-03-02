@@ -35,3 +35,17 @@ export async function requireUser() {
   }
   return user;
 }
+
+export async function getHouseholdForUser(userId: string) {
+  return prisma.householdMember.findFirst({
+    where: { userId },
+    include: { household: true },
+  });
+}
+
+export async function requireHousehold() {
+  const user = await requireUser();
+  const membership = await getHouseholdForUser(user.id);
+  if (!membership) throw new Error("No household");
+  return { user, membership, householdId: membership.householdId, role: membership.role };
+}

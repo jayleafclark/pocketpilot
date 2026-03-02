@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireHousehold } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const { id } = await params;
     const body = await request.json();
 
@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const tx = await prisma.transaction.update({
-      where: { id, userId: user.id },
+      where: { id, householdId },
       data,
     });
 

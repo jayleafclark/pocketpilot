@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireHousehold } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const { id } = await params;
     const body = await request.json();
 
@@ -19,7 +19,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
 
     const bill = await prisma.bill.update({
-      where: { id, userId: user.id },
+      where: { id, householdId },
       data,
     });
 
@@ -31,17 +31,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const { id } = await params;
 
     // Unlink transactions from this bill
     await prisma.transaction.updateMany({
-      where: { billId: id, userId: user.id },
+      where: { billId: id, householdId },
       data: { billId: null, isBill: false },
     });
 
     await prisma.bill.delete({
-      where: { id, userId: user.id },
+      where: { id, householdId },
     });
 
     return NextResponse.json({ success: true });

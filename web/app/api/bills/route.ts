@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireHousehold } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const bills = await prisma.bill.findMany({
-      where: { userId: user.id },
+      where: { householdId },
       orderBy: { dueDay: "asc" },
     });
     return NextResponse.json(bills);
@@ -17,12 +17,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const body = await request.json();
 
     const bill = await prisma.bill.create({
       data: {
         userId: user.id,
+        householdId,
         name: body.name,
         amount: parseFloat(body.amount),
         dueDay: parseInt(body.dueDay),

@@ -46,7 +46,7 @@ export default function Sidebar() {
   return (
     <div
       className="flex-shrink-0 bg-card border-r border-border flex flex-col"
-      style={{ width: 200, padding: "20px 0", position: "relative" }}
+      style={{ width: 220, padding: "20px 0", position: "relative" }}
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5" style={{ padding: "0 20px", marginBottom: 24 }}>
@@ -75,8 +75,8 @@ export default function Sidebar() {
           style={{ padding: "16px 12px", borderRadius: 14 }}
         >
           <div className="flex flex-col items-center">
-            <div className="relative" style={{ width: 100, height: 100, margin: "0 auto" }}>
-              <Arc pct={b.pct} size={100} sw={5} />
+            <div className="relative" style={{ width: 110, height: 110, margin: "0 auto" }}>
+              <Arc pct={b.pct} size={110} sw={6} />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span
                   style={{
@@ -129,7 +129,7 @@ export default function Sidebar() {
                 gap: 12,
                 padding: "10px 12px",
                 borderRadius: 8,
-                fontSize: 14,
+                fontSize: 15,
                 fontFamily: "var(--font-body)",
                 backgroundColor: active ? "#F5F0E6" : "transparent",
                 color: active ? "var(--color-ch)" : "#6B6963",

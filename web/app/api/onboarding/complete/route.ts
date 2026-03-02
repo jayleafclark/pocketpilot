@@ -13,18 +13,34 @@ export async function POST(request: NextRequest) {
     const bills: { name: string; amount: number; dueDay: number; frequency: string; dueMonth: number | null }[] = Array.isArray(body.bills) ? body.bills : [];
 
     await prisma.$transaction(async (tx) => {
+      // 0. Create Household + HouseholdMember (if not already exists)
+      let membership = await tx.householdMember.findFirst({ where: { userId: user.id } });
+      let householdId: string;
+
+      if (membership) {
+        householdId = membership.householdId;
+      } else {
+        const household = await tx.household.create({
+          data: {
+            name: user.name ? `${user.name}'s Household` : "My Household",
+            members: { create: { userId: user.id, role: "admin" } },
+          },
+        });
+        householdId = household.id;
+      }
+
       // a. Upsert IncomeConfig
       await tx.incomeConfig.upsert({
         where: { userId: user.id },
-        update: { karaniDailyAvg, ilaiBiweekly, savingsGoal },
-        create: { userId: user.id, karaniDailyAvg, ilaiBiweekly, savingsGoal },
+        update: { karaniDailyAvg, ilaiBiweekly, savingsGoal, householdId },
+        create: { userId: user.id, householdId, karaniDailyAvg, ilaiBiweekly, savingsGoal },
       });
 
       // b. Upsert Settings with onboardingComplete: true
       await tx.settings.upsert({
         where: { userId: user.id },
-        update: { savingsGoal, onboardingComplete: true },
-        create: { userId: user.id, savingsGoal, onboardingComplete: true },
+        update: { onboardingComplete: true },
+        create: { userId: user.id, onboardingComplete: true },
       });
 
       // c. If karaniDailyAvg > 0: create Entity "Karani Markets LLC"
@@ -36,6 +52,7 @@ export async function POST(request: NextRequest) {
           await tx.entity.create({
             data: {
               userId: user.id,
+              householdId,
               slug: "trading",
               name: "Karani Markets LLC",
               type: "Trading",
@@ -55,6 +72,7 @@ export async function POST(request: NextRequest) {
           await tx.entity.create({
             data: {
               userId: user.id,
+              householdId,
               slug: "creative",
               name: "Ilai Collective LLC",
               type: "Creative",
@@ -70,6 +88,7 @@ export async function POST(request: NextRequest) {
         await tx.bill.create({
           data: {
             userId: user.id,
+            householdId,
             name: bill.name,
             amount: parseFloat(String(bill.amount)) || 0,
             dueDay: parseInt(String(bill.dueDay)) || 1,

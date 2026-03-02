@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { usePlaidLink } from "react-plaid-link";
 import { Icons } from "@/components/icons";
+import CsvImportModal from "@/components/csv-import-modal";
 
 interface Account {
   id: string;
@@ -12,6 +14,45 @@ interface Account {
   balance: number;
   lastSynced: string | null;
   status: string;
+  connectionType?: string;
+}
+
+function PlaidLinkButton({ onSuccess, onClose }: { onSuccess: () => void; onClose: () => void }) {
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/plaid/create-link-token", { method: "POST" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d?.link_token) setLinkToken(d.link_token); })
+      .catch(() => {});
+  }, []);
+
+  const onPlaidSuccess = useCallback(async (publicToken: string) => {
+    await fetch("/api/plaid/exchange-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicToken }),
+    });
+    onSuccess();
+  }, [onSuccess]);
+
+  const { open, ready } = usePlaidLink({
+    token: linkToken,
+    onSuccess: onPlaidSuccess,
+    onExit: () => onClose(),
+  });
+
+  useEffect(() => {
+    if (ready && linkToken) open();
+  }, [ready, linkToken, open]);
+
+  return (
+    <div className="py-10 text-center">
+      <div className="text-t3" style={{ fontSize: 14 }}>
+        {linkToken ? "Opening Plaid Link..." : "Preparing connection..."}
+      </div>
+    </div>
+  );
 }
 
 export default function AccountsPage() {
@@ -20,6 +61,8 @@ export default function AccountsPage() {
   const [modal, setModal] = useState(false);
   const [syncing, setSyncing] = useState<string | null>(null);
   const [confirmDisconnect, setConfirmDisconnect] = useState<string | null>(null);
+  const [plaidOpen, setPlaidOpen] = useState(false);
+  const [csvOpen, setCsvOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Accounts · PocketPilot";
@@ -34,10 +77,19 @@ export default function AccountsPage() {
   const totalDebt = accounts.filter((a) => a.balance < 0).reduce((s, a) => s + a.balance, 0);
   const netPosition = totalAssets + totalDebt;
 
+  const reloadAccounts = () => {
+    fetch("/api/accounts")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setAccounts(Array.isArray(d) ? d : []))
+      .catch(() => {});
+  };
+
   const syncAccount = async (id: string) => {
     setSyncing(id);
     try {
-      await fetch("/api/sync/revolut", {
+      const account = accounts.find((a) => a.id === id);
+      const endpoint = account?.connectionType === "plaid" ? "/api/plaid/sync" : "/api/sync/revolut";
+      await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accountId: id }),
@@ -85,13 +137,13 @@ export default function AccountsPage() {
     <div>
       <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 className="font-bold text-t1" style={{ fontSize: 24, fontFamily: "var(--font-heading)" }}>Accounts</h1>
+          <h1 className="font-bold text-t1" style={{ fontSize: 28, fontFamily: "var(--font-heading)" }}>Accounts</h1>
           <p className="text-t3" style={{ fontSize: 14, marginTop: 4 }}>Connected accounts and balances</p>
         </div>
         <button
           onClick={() => setModal(true)}
           className="flex items-center gap-1.5 font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ fontSize: 14, padding: "10px 22px", borderRadius: 10, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          style={{ fontSize: 14, padding: "10px 22px", borderRadius: 14, minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
         >
           {Icons.plus} Connect Account
         </button>
@@ -106,7 +158,7 @@ export default function AccountsPage() {
         ].map((s) => (
           <div key={s.l} className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
             <div className="text-t3 font-medium uppercase" style={{ fontSize: 11, letterSpacing: "0.08em", marginBottom: 8 }}>{s.l}</div>
-            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
+            <div className="font-bold" style={{ fontSize: 28, fontFamily: "var(--font-mono)", color: s.c }}>{s.v}</div>
           </div>
         ))}
       </div>
@@ -146,7 +198,7 @@ export default function AccountsPage() {
                 className="font-bold mb-2"
                 style={{
                   fontSize: 28,
-                  fontFamily: "var(--font-heading)",
+                  fontFamily: "var(--font-mono)",
                   color: a.balance < 0 ? "var(--color-red)" : "var(--color-t1)",
                   opacity: a.status === "disconnected" ? 0.4 : 1,
                 }}
@@ -212,26 +264,8 @@ export default function AccountsPage() {
         </div>
       )}
 
-      {/* Sync Configuration */}
-      <div className="bg-card rounded-[14px] border border-border p-5">
-        <h3 className="font-semibold text-t1 mb-3" style={{ fontSize: 14 }}>Sync Configuration</h3>
-        <div className="space-y-2">
-          {[
-            { method: "Revolut Business API", schedule: "Every 2 hours" },
-            { method: "Plaid", schedule: "Webhook-driven (instant)" },
-            { method: "Full Reconciliation", schedule: "Daily at 4:00 AM" },
-            { method: "Manual Refresh", schedule: "Anytime" },
-          ].map((s) => (
-            <div key={s.method} className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
-              <span className="text-t2" style={{ fontSize: 14 }}>{s.method}</span>
-              <span className="text-t3" style={{ fontSize: 14, fontFamily: "var(--font-mono)" }}>{s.schedule}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Connect Modal */}
-      {modal && (
+      {modal && !plaidOpen && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center" onClick={() => setModal(false)}>
           <div className="absolute inset-0 bg-black/25 backdrop-blur-[4px]" />
           <div
@@ -244,24 +278,52 @@ export default function AccountsPage() {
               <button onClick={() => setModal(false)} className="bg-transparent border-none cursor-pointer text-t3 text-xl leading-none">×</button>
             </div>
             <div className="space-y-3">
-              {[
-                { name: "Plaid", desc: "Chase, BofA, Amex, Marcus, and 10,000+ institutions" },
-                { name: "Revolut Business API", desc: "Direct connection for Revolut Business accounts" },
-                { name: "Manual Entry", desc: "Log transactions manually for cash or unsupported accounts" },
-              ].map((opt) => (
-                <button
-                  key={opt.name}
-                  onClick={() => { setModal(false); alert(`${opt.name} connection flow would open here`); }}
-                  className="w-full text-left rounded-[14px] border border-border bg-card hover:bg-bg transition-colors cursor-pointer"
-                  style={{ padding: "16px" }}
-                >
-                  <div className="font-semibold text-t1" style={{ fontSize: 14 }}>{opt.name}</div>
-                  <div className="text-t3 mt-0.5" style={{ fontSize: 14 }}>{opt.desc}</div>
-                </button>
-              ))}
+              <button
+                onClick={() => { setModal(false); setPlaidOpen(true); }}
+                className="w-full text-left rounded-[14px] border border-border bg-card hover:bg-bg transition-colors cursor-pointer"
+                style={{ padding: "16px" }}
+              >
+                <div className="font-semibold text-t1" style={{ fontSize: 14 }}>Plaid</div>
+                <div className="text-t3 mt-0.5" style={{ fontSize: 14 }}>Chase, BofA, Amex, Marcus, and 10,000+ institutions</div>
+              </button>
+              <button
+                disabled
+                className="w-full text-left rounded-[14px] border border-border bg-card opacity-60 cursor-not-allowed"
+                style={{ padding: "16px" }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-t1" style={{ fontSize: 14 }}>Revolut Business API</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-bg2 text-t3">Coming Soon</span>
+                </div>
+                <div className="text-t3 mt-0.5" style={{ fontSize: 14 }}>Direct connection for Revolut Business accounts</div>
+              </button>
+              <button
+                onClick={() => { setModal(false); setCsvOpen(true); }}
+                className="w-full text-left rounded-[14px] border border-border bg-card hover:bg-bg transition-colors cursor-pointer"
+                style={{ padding: "16px" }}
+              >
+                <div className="font-semibold text-t1" style={{ fontSize: 14 }}>Import CSV</div>
+                <div className="text-t3 mt-0.5" style={{ fontSize: 14 }}>Upload bank statements, credit card exports, etc.</div>
+              </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Plaid Link flow */}
+      {plaidOpen && (
+        <PlaidLinkButton
+          onSuccess={() => { setPlaidOpen(false); reloadAccounts(); }}
+          onClose={() => setPlaidOpen(false)}
+        />
+      )}
+
+      {/* CSV Import Modal */}
+      {csvOpen && (
+        <CsvImportModal
+          onClose={() => setCsvOpen(false)}
+          onImported={() => reloadAccounts()}
+        />
       )}
     </div>
   );

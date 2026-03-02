@@ -15,14 +15,18 @@
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "next": "16.1.6",
+    "papaparse": "^5.5.3",
     "pg": "^8.19.0",
+    "plaid": "^41.3.0",
     "prisma": "^7.4.2",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-plaid-link": "^4.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
     "@types/pg": "^8.18.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",

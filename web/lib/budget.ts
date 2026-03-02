@@ -19,46 +19,21 @@ interface BudgetResult {
   billsDueAmount: number;
 }
 
-export async function computeBudget(userId: string): Promise<BudgetResult> {
+export async function computeBudget(householdId: string): Promise<BudgetResult> {
   const now = new Date();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-  // Get or create Settings
-  let settings = await prisma.settings.findUnique({ where: { userId } });
-  if (!settings) {
-    settings = await prisma.settings.create({
-      data: {
-        userId,
-        savingsGoal: 0,
-        currentStreak: 0,
-        bestStreak: 0,
-        biometricEnabled: false,
-        onboardingComplete: false,
-      },
-    });
-  }
+  // Get IncomeConfig for this household
+  const incomeConfig = await prisma.incomeConfig.findFirst({ where: { householdId } });
 
-  // Get or create IncomeConfig
-  let incomeConfig = await prisma.incomeConfig.findUnique({ where: { userId } });
-  if (!incomeConfig) {
-    incomeConfig = await prisma.incomeConfig.create({
-      data: {
-        userId,
-        karaniDailyAvg: 0,
-        ilaiBiweekly: 0,
-        savingsGoal: 0,
-      },
-    });
-  }
-
-  const karaniDaily = safeNumber(incomeConfig.karaniDailyAvg);
-  const ilaiBiweekly = safeNumber(incomeConfig.ilaiBiweekly);
-  const savingsGoal = safeNumber(incomeConfig.savingsGoal);
+  const karaniDaily = safeNumber(incomeConfig?.karaniDailyAvg);
+  const ilaiBiweekly = safeNumber(incomeConfig?.ilaiBiweekly);
+  const savingsGoal = safeNumber(incomeConfig?.savingsGoal);
 
   const estimatedMonthlyIncome = safeNumber(karaniDaily * 22 + ilaiBiweekly * 2);
 
   // Get all active bills and prorate
-  const bills = await prisma.bill.findMany({ where: { userId, active: true } });
+  const bills = await prisma.bill.findMany({ where: { householdId, active: true } });
   let totalBills = 0;
   for (const bill of bills) {
     if (bill.frequency === "monthly") totalBills += safeNumber(bill.amount);
@@ -76,7 +51,7 @@ export async function computeBudget(userId: string): Promise<BudgetResult> {
 
   const todayTxs = await prisma.transaction.findMany({
     where: {
-      userId,
+      householdId,
       date: { gte: startOfDay, lt: endOfDay },
       type: "debit",
       isBill: false,
@@ -95,7 +70,7 @@ export async function computeBudget(userId: string): Promise<BudgetResult> {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   const deposits = await prisma.transaction.findMany({
-    where: { userId, date: { gte: startOfMonth, lte: endOfMonth }, type: "credit" },
+    where: { householdId, date: { gte: startOfMonth, lte: endOfMonth }, type: "credit" },
   });
   const deposited = safeNumber(deposits.reduce((s, tx) => s + tx.amount, 0));
 

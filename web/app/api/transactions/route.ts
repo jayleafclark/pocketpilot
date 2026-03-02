@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireUser } from "@/lib/auth";
+import { requireHousehold } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await requireUser();
+    const { user, householdId } = await requireHousehold();
     const params = request.nextUrl.searchParams;
 
-    const where: Record<string, unknown> = { userId: user.id };
+    const where: Record<string, unknown> = { householdId };
 
     // Date filter
     const date = params.get("date");

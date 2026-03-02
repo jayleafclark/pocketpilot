@@ -41,6 +41,11 @@ export default function OnboardingPage() {
   // Step 5
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  // Step 6 — invites
+  const [invites, setInvites] = useState<{ email: string; role: string }[]>([]);
+  const [invEmail, setInvEmail] = useState("");
+  const [invRole, setInvRole] = useState("viewer");
+  const [finishing, setFinishing] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -111,7 +116,8 @@ export default function OnboardingPage() {
         }),
       });
       if (!res.ok) throw new Error();
-      router.push("/");
+      setSaving(false);
+      animateTo(6, "forward");
     } catch {
       setSaving(false);
       setToast("Something went wrong. Try again.");
@@ -119,8 +125,37 @@ export default function OnboardingPage() {
     }
   };
 
+  const addInvite = () => {
+    const email = invEmail.trim().toLowerCase();
+    if (!email || !email.includes("@")) return;
+    if (invites.some((inv) => inv.email === email)) return;
+    setInvites((prev) => [...prev, { email, role: invRole }]);
+    setInvEmail("");
+    setInvRole("viewer");
+  };
+
+  const removeInvite = (idx: number) => {
+    setInvites((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleFinish = async () => {
+    setFinishing(true);
+    try {
+      if (invites.length > 0) {
+        await fetch("/api/household/invite", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invites }),
+        });
+      }
+      router.push("/");
+    } catch {
+      router.push("/");
+    }
+  };
+
   // Progress dots
-  const dots = [1, 2, 3, 4, 5];
+  const dots = [1, 2, 3, 4, 5, 6];
 
   const slideClass = showContent
     ? "onb-slide-in"
@@ -194,7 +229,7 @@ export default function OnboardingPage() {
         overflow: "hidden",
       }}>
         {/* Back button (steps 2-4 only) */}
-        {step >= 2 && step <= 4 && (
+        {step >= 2 && step <= 5 && (
           <button
             onClick={goBack}
             disabled={animating}
@@ -233,7 +268,7 @@ export default function OnboardingPage() {
 
         {/* Step counter */}
         <div style={{ fontSize: 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, color: "#9C9A95", textAlign: "center", marginBottom: 24 }}>
-          Step {step} of 5
+          Step {step} of 6
         </div>
 
         {/* Animated content */}
@@ -270,6 +305,20 @@ export default function OnboardingPage() {
               monthPool={monthPool}
               saving={saving}
               onComplete={handleComplete}
+            />
+          )}
+          {step === 6 && (
+            <Step6
+              invites={invites}
+              invEmail={invEmail}
+              setInvEmail={setInvEmail}
+              invRole={invRole}
+              setInvRole={setInvRole}
+              onAdd={addInvite}
+              onRemove={removeInvite}
+              onFinish={handleFinish}
+              onSkip={() => router.push("/")}
+              finishing={finishing}
             />
           )}
         </div>
@@ -617,8 +666,115 @@ function Step5({ dailyBudget, estimatedMonthly, billsMonthlyTotal, savingsNum, m
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             Setting up...
           </>
-        ) : "Go to Dashboard"}
+        ) : "Continue"}
       </button>
+    </div>
+  );
+}
+
+/* ── STEP 6 ── */
+function Step6({ invites, invEmail, setInvEmail, invRole, setInvRole, onAdd, onRemove, onFinish, onSkip, finishing }: {
+  invites: { email: string; role: string }[];
+  invEmail: string; setInvEmail: (v: string) => void;
+  invRole: string; setInvRole: (v: string) => void;
+  onAdd: () => void; onRemove: (i: number) => void;
+  onFinish: () => void; onSkip: () => void; finishing: boolean;
+}) {
+  return (
+    <div>
+      <h2 style={{ fontSize: 24, fontFamily: "'Bodoni Moda', serif", fontWeight: 600, color: "#1A1915", textAlign: "center", marginBottom: 8 }}>
+        Share your budget
+      </h2>
+      <p style={{ fontSize: 14, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, color: "#9C9A95", textAlign: "center", marginBottom: 32 }}>
+        Invite your partner or family to view and manage together
+      </p>
+
+      {/* Add invite row */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <div className="onb-input-wrap" style={{ flex: 1 }}>
+          <input
+            type="email"
+            value={invEmail}
+            onChange={(e) => setInvEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onAdd()}
+            placeholder="partner@email.com"
+            style={{ fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: "#1A1915", background: "transparent", border: "none", outline: "none", width: "100%" }}
+          />
+        </div>
+        <select
+          value={invRole}
+          onChange={(e) => setInvRole(e.target.value)}
+          style={{
+            height: 48, borderRadius: 14, border: "1px solid rgba(0,0,0,0.1)", padding: "0 12px",
+            fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: "#1A1915", background: "#FFFFFF",
+            outline: "none", width: 120, appearance: "none" as const,
+          }}
+        >
+          <option value="coadmin">Co-Admin</option>
+          <option value="viewer">Viewer</option>
+        </select>
+        <button
+          onClick={onAdd}
+          disabled={!invEmail.includes("@")}
+          style={{
+            height: 48, width: 48, borderRadius: 14, border: "none",
+            background: invEmail.includes("@") ? "#B09049" : "#D4D0C8",
+            color: "#FFFFFF", fontSize: 20, cursor: invEmail.includes("@") ? "pointer" : "not-allowed",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}
+        >
+          +
+        </button>
+      </div>
+
+      {/* Invite list */}
+      {invites.length > 0 && (
+        <div style={{ border: "1px solid rgba(0,0,0,0.06)", borderRadius: 14, overflow: "hidden", marginBottom: 24 }}>
+          {invites.map((inv, i) => (
+            <div key={i} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 16px",
+              borderBottom: i < invites.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none",
+            }}>
+              <div>
+                <div style={{ fontSize: 14, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, color: "#1A1915" }}>{inv.email}</div>
+                <div style={{ fontSize: 12, fontFamily: "'DM Sans', sans-serif", color: "#9C9A95" }}>
+                  {inv.role === "coadmin" ? "Co-Admin" : "Viewer"}
+                </div>
+              </div>
+              <button
+                onClick={() => onRemove(i)}
+                style={{ fontSize: 18, color: "#C8C4BC", cursor: "pointer", background: "none", border: "none", padding: 4, lineHeight: 1 }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#E06B6B"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#C8C4BC"; }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {invites.length === 0 && (
+        <div style={{ border: "2px dashed #D4D0C8", borderRadius: 14, height: 80, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
+          <span style={{ fontSize: 14, fontFamily: "'DM Sans', sans-serif", color: "#9C9A95" }}>No invites yet — you can always add people later</span>
+        </div>
+      )}
+
+      <button className="onb-btn" onClick={onFinish} disabled={finishing}>
+        {finishing ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 1s linear infinite" }}>
+              <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="3" strokeDasharray="31.4" strokeDashoffset="10" strokeLinecap="round" />
+            </svg>
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            Finishing...
+          </>
+        ) : invites.length > 0 ? "Send Invites & Go to Dashboard" : "Go to Dashboard"}
+      </button>
+      {invites.length === 0 && (
+        <button className="onb-skip" onClick={onSkip} disabled={finishing}>Skip — I&apos;ll invite people later</button>
+      )}
     </div>
   );
 }

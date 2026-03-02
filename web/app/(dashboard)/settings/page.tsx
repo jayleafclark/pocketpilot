@@ -94,7 +94,7 @@ export default function SettingsPage() {
   return (
     <div>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 24, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Settings</h1>
+        <h1 style={{ fontSize: 28, fontFamily: "var(--font-heading)", fontWeight: 700 }} className="text-t1">Settings</h1>
         <p style={{ fontSize: 14, marginTop: 4 }} className="text-t3">Income configuration and preferences</p>
       </div>
 
@@ -264,7 +264,7 @@ export default function SettingsPage() {
               { l: "Notifications", v: data?.settings?.notificationsOn ? "Enabled" : "Disabled" },
               { l: "Quiet Hours", v: `${data?.settings?.quietHoursStart || 22}:00–${data?.settings?.quietHoursEnd || 7}:00` },
             ].map((pref) => (
-              <div key={pref.l} className="flex justify-between py-1.5" style={{ borderTop: "1px solid var(--color-border)" }}>
+              <div key={pref.l} className="flex justify-between items-center" style={{ borderTop: "1px solid var(--color-border)", minHeight: 48 }}>
                 <span style={{ fontSize: 14 }} className="text-t3">{pref.l}</span>
                 <span style={{ fontSize: 14 }} className="text-t1 font-medium">{pref.v}</span>
               </div>

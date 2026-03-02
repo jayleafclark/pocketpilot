@@ -217,13 +217,13 @@ export default function BillsPage() {
     <div>
       <div className="flex justify-between items-start" style={{ marginBottom: 28 }}>
         <div>
-          <h1 className="text-[24px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Bills</h1>
+          <h1 className="text-[28px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Bills</h1>
           <p className="text-[14px] text-t3" style={{ marginTop: 4 }}>Recurring expenses and subscriptions</p>
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-1.5 rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          className="flex items-center gap-1.5 rounded-[14px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+          style={{ padding: "10px 22px", minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
         >
           {Icons.plus} Add Bill
         </button>
@@ -238,13 +238,13 @@ export default function BillsPage() {
         ].map((s) => (
           <div key={s.l} className="bg-card border border-border" style={{ borderRadius: 14, padding: 24 }}>
             <div className="text-[11px] text-t3 font-medium uppercase" style={{ letterSpacing: "0.08em", marginBottom: 8 }}>{s.l}</div>
-            <div className="text-[28px] font-bold" style={{ fontFamily: "var(--font-heading)", color: s.c }}>{s.v}</div>
+            <div className="text-[28px] font-bold" style={{ fontFamily: "var(--font-mono)", color: s.c }}>{s.v}</div>
           </div>
         ))}
       </div>
 
       {/* Search */}
-      <div className="mb-5 flex items-center gap-2.5 px-4 py-2.5 border border-border bg-card max-w-[320px]" style={{ borderRadius: 14 }}>
+      <div className="mb-5 flex items-center gap-2.5 px-4 border border-border bg-card max-w-[400px]" style={{ borderRadius: 14, height: 44 }}>
         <span className="text-t4 flex">{Icons.search}</span>
         <input
           data-search

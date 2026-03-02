@@ -22,32 +22,44 @@ model User {
   incomeConfig  IncomeConfig?
   entities      Entity[]
   settings      Settings?
+  memberships   HouseholdMember[]
 }
 
 model Account {
-  id            String        @id @default(cuid())
-  userId        String
-  user          User          @relation(fields: [userId], references: [id])
-  name          String
-  institution   String
-  last4         String
-  type          String
-  revolutId     String?       @unique
-  balance       Float         @default(0)
-  lastSynced    DateTime?
-  status        String        @default("connected")
-  createdAt     DateTime      @default(now())
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id])
+  householdId      String?
+  household        Household?    @relation(fields: [householdId], references: [id])
+  name             String
+  institution      String
+  last4            String
+  type             String
+  revolutId        String?       @unique
+  plaidAccessToken String?
+  plaidItemId      String?
+  plaidAccountId   String?
+  connectionType   String        @default("manual")
+  balance          Float         @default(0)
+  lastSynced       DateTime?
+  status           String        @default("connected")
+  createdAt        DateTime      @default(now())
 
-  transactions  Transaction[]
+  transactions     Transaction[]
+
+  @@index([householdId])
 }
 
 model Transaction {
   id               String    @id @default(cuid())
   userId           String
   user             User      @relation(fields: [userId], references: [id])
+  householdId      String?
+  household        Household? @relation(fields: [householdId], references: [id])
   accountId        String?
   account          Account?  @relation(fields: [accountId], references: [id])
   revolutTxId      String?   @unique
+  plaidTxId        String?   @unique
   merchant         String
   amount           Float
   type             String    @default("debit")
@@ -71,12 +83,15 @@ model Transaction {
   @@index([userId, date])
   @@index([userId, entity])
   @@index([userId, category])
+  @@index([householdId])
 }
 
 model Bill {
   id            String        @id @default(cuid())
   userId        String
   user          User          @relation(fields: [userId], references: [id])
+  householdId   String?
+  household     Household?    @relation(fields: [householdId], references: [id])
   name          String
   amount        Float
   dueDay        Int
@@ -92,12 +107,16 @@ model Bill {
   updatedAt     DateTime      @updatedAt
 
   transactions  Transaction[]
+
+  @@index([householdId])
 }
 
 model Entity {
   id            String        @id @default(cuid())
   userId        String
   user          User          @relation(fields: [userId], references: [id])
+  householdId   String?
+  household     Household?    @relation(fields: [householdId], references: [id])
   slug          String
   name          String
   type          String
@@ -106,16 +125,21 @@ model Entity {
   createdAt     DateTime      @default(now())
 
   @@unique([userId, slug])
+  @@index([householdId])
 }
 
 model IncomeConfig {
   id                String    @id @default(cuid())
   userId            String    @unique
   user              User      @relation(fields: [userId], references: [id])
+  householdId       String?
+  household         Household? @relation(fields: [householdId], references: [id])
   karaniDailyAvg    Float     @default(0)
   ilaiBiweekly      Float     @default(0)
   savingsGoal       Float     @default(0)
   updatedAt         DateTime  @updatedAt
+
+  @@index([householdId])
 }
 
 model Settings {
@@ -133,4 +157,41 @@ model Settings {
   biometricEnabled    Boolean   @default(false)
   onboardingComplete  Boolean   @default(false)
   updatedAt           DateTime  @updatedAt
+}
+
+model Household {
+  id            String              @id @default(cuid())
+  name          String              @default("My Household")
+  createdAt     DateTime            @default(now())
+
+  members       HouseholdMember[]
+  invites       HouseholdInvite[]
+  accounts      Account[]
+  transactions  Transaction[]
+  bills         Bill[]
+  entities      Entity[]
+  incomeConfigs IncomeConfig[]
+}
+
+model HouseholdMember {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  role        String    @default("admin")
+  joinedAt    DateTime  @default(now())
+
+  @@unique([householdId, userId])
+}
+
+model HouseholdInvite {
+  id          String    @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id])
+  email       String
+  role        String    @default("viewer")
+  invitedBy   String
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
 }
