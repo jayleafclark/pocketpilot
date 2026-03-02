@@ -1,0 +1,5 @@
+[build]
+rootDir = "web"
+
+[deploy]
+startCommand = "npm start"
