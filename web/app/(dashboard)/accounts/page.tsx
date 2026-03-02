@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import { Icons } from "@/components/icons";
 import CsvImportModal from "@/components/csv-import-modal";
+import { useHousehold } from "@/lib/household-context";
 
 interface Account {
   id: string;
@@ -63,6 +64,8 @@ export default function AccountsPage() {
   const [confirmDisconnect, setConfirmDisconnect] = useState<string | null>(null);
   const [plaidOpen, setPlaidOpen] = useState(false);
   const [csvOpen, setCsvOpen] = useState(false);
+  const { role } = useHousehold();
+  const canWrite = role !== "viewer";
 
   useEffect(() => {
     document.title = "Accounts · PocketPilot";
@@ -140,13 +143,15 @@ export default function AccountsPage() {
           <h1 className="font-bold text-t1" style={{ fontSize: 28, fontFamily: "var(--font-heading)" }}>Accounts</h1>
           <p className="text-t3" style={{ fontSize: 14, marginTop: 4 }}>Connected accounts and balances</p>
         </div>
-        <button
-          onClick={() => setModal(true)}
-          className="flex items-center gap-1.5 font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ fontSize: 14, padding: "10px 22px", borderRadius: 14, minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
-        >
-          {Icons.plus} Connect Account
-        </button>
+        {canWrite && (
+          <button
+            onClick={() => setModal(true)}
+            className="flex items-center gap-1.5 font-semibold text-[#FFFDF5] border-none cursor-pointer"
+            style={{ fontSize: 14, padding: "10px 22px", borderRadius: 14, minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          >
+            {Icons.plus} Connect Account
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -216,7 +221,7 @@ export default function AccountsPage() {
               </div>
 
               <div className="flex gap-2">
-                {a.status === "connected" && (
+                {a.status === "connected" && canWrite && (
                   <button
                     onClick={() => syncAccount(a.id)}
                     disabled={syncing === a.id}
@@ -227,7 +232,7 @@ export default function AccountsPage() {
                     {syncing === a.id ? "Syncing..." : "Refresh"}
                   </button>
                 )}
-                {a.status !== "disconnected" ? (
+                {canWrite && a.status !== "disconnected" ? (
                   confirmDisconnect === a.id ? (
                     <div className="flex items-center gap-1.5">
                       <span className="text-red" style={{ fontSize: 13 }}>Disconnect?</span>
@@ -257,15 +262,17 @@ export default function AccountsPage() {
           ))}
 
           {/* Add card */}
-          <div
-            onClick={() => setModal(true)}
-            className="border-2 border-dashed border-border cursor-pointer flex flex-col items-center justify-center gap-2 hover:border-ch transition-colors min-h-[180px]"
-            style={{ borderRadius: 14, padding: "20px 24px" }}
-          >
-            <span className="text-t4">{Icons.plus}</span>
-            <span className="font-medium text-t3" style={{ fontSize: 14 }}>Connect a new account</span>
-            <span className="text-t4" style={{ fontSize: 14 }}>Revolut · Plaid · Manual</span>
-          </div>
+          {canWrite && (
+            <div
+              onClick={() => setModal(true)}
+              className="border-2 border-dashed border-border cursor-pointer flex flex-col items-center justify-center gap-2 hover:border-ch transition-colors min-h-[180px]"
+              style={{ borderRadius: 14, padding: "20px 24px" }}
+            >
+              <span className="text-t4">{Icons.plus}</span>
+              <span className="font-medium text-t3" style={{ fontSize: 14 }}>Connect a new account</span>
+              <span className="text-t4" style={{ fontSize: 14 }}>Revolut · Plaid · Manual</span>
+            </div>
+          )}
         </div>
       )}
 

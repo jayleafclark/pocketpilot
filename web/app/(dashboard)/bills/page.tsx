@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Icons } from "@/components/icons";
+import { useHousehold } from "@/lib/household-context";
 
 interface Bill {
   id: string;
@@ -35,6 +36,8 @@ export default function BillsPage() {
   const [form, setForm] = useState(empty);
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const { role } = useHousehold();
+  const canWrite = role !== "viewer";
 
   useEffect(() => {
     document.title = `Bills (${bills.filter((b) => !b.paidThisMonth).length} due) · PocketPilot`;
@@ -190,12 +193,14 @@ export default function BillsPage() {
           ${bill.amount.toFixed(2)}
         </span>
         <span className="text-[13px] text-t3">{bill.frequency}</span>
-        <button
-          onClick={() => openEdit(bill)}
-          className="text-[14px] text-t3 bg-transparent border-none cursor-pointer hover:text-ch"
-        >
-          Edit
-        </button>
+        {canWrite && (
+          <button
+            onClick={() => openEdit(bill)}
+            className="text-[14px] text-t3 bg-transparent border-none cursor-pointer hover:text-ch"
+          >
+            Edit
+          </button>
+        )}
       </div>
     </div>
   );
@@ -220,13 +225,15 @@ export default function BillsPage() {
           <h1 className="text-[28px] font-bold text-t1" style={{ fontFamily: "var(--font-heading)" }}>Bills</h1>
           <p className="text-[14px] text-t3" style={{ marginTop: 4 }}>Recurring expenses and subscriptions</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-1.5 rounded-[14px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-          style={{ padding: "10px 22px", minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
-        >
-          {Icons.plus} Add Bill
-        </button>
+        {canWrite && (
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-1.5 rounded-[14px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+            style={{ padding: "10px 22px", minHeight: 44, background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+          >
+            {Icons.plus} Add Bill
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -261,14 +268,16 @@ export default function BillsPage() {
 
       {bills.length === 0 ? (
         <div className="bg-card border border-border p-12 text-center" style={{ borderRadius: 14 }}>
-          <p className="text-t3 mb-4 text-[14px]">No recurring bills yet. Add your first bill to get started.</p>
-          <button
-            onClick={openAdd}
-            className="rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
-            style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
-          >
-            + Add Bill
-          </button>
+          <p className="text-t3 mb-4 text-[14px]">No recurring bills yet.{canWrite ? " Add your first bill to get started." : ""}</p>
+          {canWrite && (
+            <button
+              onClick={openAdd}
+              className="rounded-[10px] text-[14px] font-semibold text-[#FFFDF5] border-none cursor-pointer"
+              style={{ padding: "10px 22px", background: "linear-gradient(135deg, var(--color-ch), var(--color-ch-light))" }}
+            >
+              + Add Bill
+            </button>
+          )}
         </div>
       ) : (
         <>

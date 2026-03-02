@@ -31,6 +31,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const { role, members, reload: reloadHousehold } = useHousehold();
+  const canWrite = role !== "viewer";
   const [invEmail, setInvEmail] = useState("");
   const [invRole, setInvRole] = useState("viewer");
   const [inviting, setInviting] = useState(false);
@@ -159,8 +160,9 @@ export default function SettingsPage() {
                 <input
                   type="number"
                   value={karani}
-                  onChange={(e) => setKarani(e.target.value)}
-                  onBlur={() => saveField("karani")}
+                  onChange={(e) => canWrite && setKarani(e.target.value)}
+                  onBlur={() => canWrite && saveField("karani")}
+                  readOnly={!canWrite}
                   className="w-full border border-border bg-card text-t1 outline-none"
                   style={{
                     fontSize: 14,
@@ -192,8 +194,9 @@ export default function SettingsPage() {
                 <input
                   type="number"
                   value={ilai}
-                  onChange={(e) => setIlai(e.target.value)}
-                  onBlur={() => saveField("ilai")}
+                  onChange={(e) => canWrite && setIlai(e.target.value)}
+                  onBlur={() => canWrite && saveField("ilai")}
+                  readOnly={!canWrite}
                   className="w-full border border-border bg-card text-t1 outline-none"
                   style={{
                     fontSize: 14,
@@ -234,8 +237,9 @@ export default function SettingsPage() {
               <input
                 type="number"
                 value={savings}
-                onChange={(e) => setSavings(e.target.value)}
-                onBlur={() => saveField("savings")}
+                onChange={(e) => canWrite && setSavings(e.target.value)}
+                onBlur={() => canWrite && saveField("savings")}
+                readOnly={!canWrite}
                 className="w-full border border-border bg-card text-t1 outline-none"
                 style={{
                   fontSize: 14,

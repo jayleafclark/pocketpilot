@@ -49,3 +49,13 @@ export async function requireHousehold() {
   if (!membership) throw new Error("No household");
   return { user, membership, householdId: membership.householdId, role: membership.role };
 }
+
+const ROLE_HIERARCHY: Record<string, number> = { admin: 3, coadmin: 2, viewer: 1 };
+
+export async function requireRole(minRole: "admin" | "coadmin" | "viewer") {
+  const ctx = await requireHousehold();
+  const userLevel = ROLE_HIERARCHY[ctx.role] || 0;
+  const requiredLevel = ROLE_HIERARCHY[minRole] || 0;
+  if (userLevel < requiredLevel) throw new Error("Forbidden");
+  return ctx;
+}

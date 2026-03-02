@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireHousehold } from "@/lib/auth";
+import { requireHousehold, requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
@@ -43,7 +43,7 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { user } = await requireHousehold();
+    const { user } = await requireRole("coadmin");
     const body = await request.json();
 
     // Upsert income config
@@ -65,7 +65,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Viewer access is read-only" }, { status: 403 });
+    }
     return NextResponse.json({ error: "Failed to update settings" }, { status: 400 });
   }
 }

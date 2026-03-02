@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireHousehold } from "@/lib/auth";
+import { requireHousehold, requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { user, householdId } = await requireHousehold();
+    const { user, householdId } = await requireRole("coadmin");
     const body = await request.json();
 
     const bill = await prisma.bill.create({
@@ -37,7 +37,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(bill, { status: 201 });
-  } catch {
+  } catch (e) {
+    if (e instanceof Error && e.message === "Forbidden") {
+      return NextResponse.json({ error: "Viewer access is read-only" }, { status: 403 });
+    }
     return NextResponse.json({ error: "Failed to create bill" }, { status: 400 });
   }
 }

@@ -6,6 +6,7 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Arc from "./arc";
 import { Icons } from "./icons";
+import { useHousehold } from "@/lib/household-context";
 
 const nav = [
   { id: "/", icon: Icons.home, label: "Dashboard", key: "1" },
@@ -29,6 +30,7 @@ export default function Sidebar() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const [budget, setBudget] = useState<BudgetData | null>(null);
+  const { role } = useHousehold();
 
   useEffect(() => {
     fetch("/api/budget")
@@ -161,7 +163,14 @@ export default function Sidebar() {
           >
             {initial}
           </div>
-          <span style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>{displayName}</span>
+          <div>
+            <span style={{ fontSize: 13, fontFamily: "var(--font-body)", fontWeight: 500, color: "#1A1915" }}>{displayName}</span>
+            {role && role !== "admin" && (
+              <span className="block" style={{ fontSize: 10, fontWeight: 600, color: "var(--color-t4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                {role === "coadmin" ? "Co-Admin" : "Viewer"}
+              </span>
+            )}
+          </div>
         </div>
         <button
           onClick={() => signOut({ redirectUrl: "/sign-in" })}
